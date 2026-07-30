@@ -1,20 +1,90 @@
+import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Loader2, Mail, Phone, MapPin, User } from 'lucide-react'
-import { useQuery } from '@tanstack/react-query'
+import { ArrowLeft, Loader2, ChevronDown, Check, CalendarIcon, User } from 'lucide-react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { format } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
 import { PageLayout } from '@/components/layout/page-layout'
 import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Switch } from '@/components/ui/switch'
+import { Calendar } from '@/components/ui/calendar'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible'
 import { clienteService } from '@/services/cliente-service'
+import { cn } from '@/lib/utils'
+
+function FormField({ label, ...props }: { label: string } & React.InputHTMLAttributes<HTMLInputElement>) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <label className="text-foreground text-xs font-medium">{label}</label>
+      <Input {...props} />
+    </div>
+  )
+}
 
 export function ClienteDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
 
   const { data: cliente, isLoading } = useQuery({
     queryKey: ['cliente', id],
     queryFn: () => clienteService.buscarPorId(id!),
     enabled: !!id,
   })
+
+  const [dadosOpen, setDadosOpen] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [calendarOpen, setCalendarOpen] = useState(false)
+
+  const [form, setForm] = useState({
+    fullName: '',
+    email: '',
+    phone: '',
+    cpf: '',
+    dataNascimento: '',
+    rua: '',
+    numero: '',
+    cidade: '',
+    estado: '',
+    cep: '',
+    ativo: true,
+  })
+
+  useEffect(() => {
+    if (cliente) {
+      setForm({
+        fullName: cliente.fullName,
+        email: cliente.email,
+        phone: cliente.phone,
+        cpf: cliente.cpf,
+        dataNascimento: cliente.dataNascimento ?? '',
+        rua: cliente.endereco?.rua ?? '',
+        numero: cliente.endereco?.numero ?? '',
+        cidade: cliente.endereco?.cidade ?? '',
+        estado: cliente.endereco?.estado ?? '',
+        cep: cliente.endereco?.cep ?? '',
+        ativo: cliente.ativo,
+      })
+    }
+  }, [cliente])
+
+  const handleSave = async () => {
+    if (!id) return
+    setSaving(true)
+    try {
+      await clienteService.atualizar(id, form)
+      queryClient.invalidateQueries({ queryKey: ['cliente', id] })
+    } catch {
+      // handled by api.ts toast
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const selectedDate = form.dataNascimento ? new Date(form.dataNascimento + 'T00:00:00') : undefined
 
   if (isLoading) {
     return (
@@ -48,43 +118,154 @@ export function ClienteDetailPage() {
     >
       <div className="flex flex-col gap-4">
         <div className="flex items-center gap-4">
-          <div className="bg-accent/10 text-accent flex size-16 items-center justify-center rounded-full text-2xl font-bold">
-            {cliente.fullName.charAt(0).toUpperCase()}
+          <div className="bg-muted flex size-14 items-center justify-center rounded-full">
+            <User size={24} className="text-muted-foreground" />
           </div>
-          <div>
+          <div className="flex-1">
             <h2 className="text-foreground text-lg font-semibold">{cliente.fullName}</h2>
-            <span className={`mt-1 inline-block rounded-full px-3 py-0.5 text-xs font-medium ${cliente.ativo ? 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400' : 'bg-muted text-muted-foreground'}`}>
-              {cliente.ativo ? 'Ativo' : 'Inativo'}
-            </span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className={cn('size-2 rounded-full', cliente.ativo ? 'bg-green-500' : 'bg-muted-foreground/40')} />
+            <span className="text-muted-foreground text-xs">{cliente.ativo ? 'Ativo' : 'Inativo'}</span>
           </div>
         </div>
 
-        <Card className="p-4">
-          <h3 className="text-foreground mb-3 text-sm font-semibold flex items-center gap-2"><User size={14} /> Dados Pessoais</h3>
-          <div className="space-y-3">
-            <div className="flex items-center gap-3">
-              <Mail size={14} className="text-muted-foreground shrink-0" />
-              <span className="text-foreground text-sm">{cliente.email}</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <Phone size={14} className="text-muted-foreground shrink-0" />
-              <span className="text-foreground text-sm">{cliente.phone}</span>
-            </div>
-          </div>
-        </Card>
+        <Collapsible open={dadosOpen} onOpenChange={setDadosOpen}>
+          <div className="rounded-xl border border-border">
+            <CollapsibleTrigger asChild>
+              <button type="button" className="text-foreground flex w-full items-center justify-between px-4 py-3 text-sm font-medium">
+                Dados do cliente
+                <ChevronDown size={16} className={cn('text-muted-foreground transition-transform duration-200', dadosOpen && 'rotate-180')} />
+              </button>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <div className="flex flex-col gap-4 border-t border-border px-4 py-4">
+                <div className="flex flex-col gap-3">
+                  <FormField
+                    label="Nome completo"
+                    value={form.fullName}
+                    onChange={(e) => setForm((p) => ({ ...p, fullName: e.target.value }))}
+                  />
+                  <div className="grid grid-cols-2 gap-3">
+                    <FormField
+                      label="E-mail"
+                      type="email"
+                      value={form.email}
+                      onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
+                    />
+                    <FormField
+                      label="Telefone"
+                      value={form.phone}
+                      onChange={(e) => setForm((p) => ({ ...p, phone: e.target.value }))}
+                    />
+                  </div>
+                  <FormField
+                    label="CPF"
+                    value={form.cpf}
+                    onChange={(e) => setForm((p) => ({ ...p, cpf: e.target.value }))}
+                  />
+                  <div className="flex flex-col gap-1.5">
+                    <Label className="text-foreground text-xs font-medium">Data de nascimento</Label>
+                    <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+                      <PopoverTrigger asChild>
+                        <button
+                          type="button"
+                          className={cn(
+                            'flex h-10 w-full items-center gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
+                            !selectedDate && 'text-muted-foreground',
+                          )}
+                        >
+                          <CalendarIcon size={16} className="shrink-0 text-muted-foreground" />
+                          <span className="flex-1 text-left">
+                            {selectedDate
+                              ? format(selectedDate, 'dd/MM/yyyy', { locale: ptBR })
+                              : 'Selecione a data'}
+                          </span>
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={selectedDate}
+                          onSelect={(date) => {
+                            if (date) {
+                              setForm((p) => ({ ...p, dataNascimento: format(date, 'yyyy-MM-dd') }))
+                              setCalendarOpen(false)
+                            }
+                          }}
+                          disabled={(date) => date > new Date() || date < new Date('1900-01-01')}
+                          captionLayout="dropdown"
+                          startMonth={new Date(1940, 0)}
+                          endMonth={new Date()}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                </div>
 
-        {cliente.endereco && (
-          <Card className="p-4">
-            <h3 className="text-foreground mb-3 text-sm font-semibold flex items-center gap-2"><MapPin size={14} /> Endereço</h3>
-            <p className="text-muted-foreground text-sm">
-              {cliente.endereco.rua}, {cliente.endereco.numero}
-              <br />
-              {cliente.endereco.cidade} - {cliente.endereco.estado}
-              <br />
-              CEP: {cliente.endereco.cep}
-            </p>
-          </Card>
-        )}
+                <div className="flex flex-col gap-3">
+                  <p className="text-muted-foreground text-xs font-medium uppercase tracking-wide">Endereço</p>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="col-span-2">
+                      <FormField
+                        label="Rua"
+                        value={form.rua}
+                        onChange={(e) => setForm((p) => ({ ...p, rua: e.target.value }))}
+                      />
+                    </div>
+                    <FormField
+                      label="Número"
+                      value={form.numero}
+                      onChange={(e) => setForm((p) => ({ ...p, numero: e.target.value }))}
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <FormField
+                      label="Cidade"
+                      value={form.cidade}
+                      onChange={(e) => setForm((p) => ({ ...p, cidade: e.target.value }))}
+                    />
+                    <FormField
+                      label="Estado"
+                      value={form.estado}
+                      onChange={(e) => setForm((p) => ({ ...p, estado: e.target.value }))}
+                    />
+                  </div>
+                  <FormField
+                    label="CEP"
+                    value={form.cep}
+                    onChange={(e) => setForm((p) => ({ ...p, cep: e.target.value }))}
+                  />
+                </div>
+
+                <div className="flex items-center justify-between rounded-xl border border-border px-4 py-3">
+                  <div className="space-y-0.5">
+                    <Label className="text-sm font-medium">Aluno ativo</Label>
+                    <p className="text-muted-foreground text-xs">Desative para marcar como ex-aluno</p>
+                  </div>
+                  <Switch
+                    checked={form.ativo}
+                    onCheckedChange={(checked) => setForm((p) => ({ ...p, ativo: checked }))}
+                  />
+                </div>
+
+                <Button className="w-full" onClick={handleSave} disabled={saving}>
+                  {saving ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <Loader2 size={16} className="animate-spin" />
+                      Salvando...
+                    </span>
+                  ) : (
+                    <span className="flex items-center justify-center gap-2">
+                      <Check size={16} />
+                      Salvar
+                    </span>
+                  )}
+                </Button>
+              </div>
+            </CollapsibleContent>
+          </div>
+        </Collapsible>
       </div>
     </PageLayout>
   )

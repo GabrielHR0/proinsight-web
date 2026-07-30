@@ -29,14 +29,17 @@ export function AlunosPage() {
     queryFn: () => clienteService.listarTodos(),
   })
 
+  const clientesList = Array.isArray(clientes) ? clientes : []
+
   const comboboxItems: ComboboxMobileItem<Cliente>[] = useMemo(() => {
-    return (clientes ?? []).map((c) => ({
+    return clientesList.map((c) => ({
       data: c,
       icon: Users,
       label: c.fullName,
       subtitle: c.email,
+      status: c.ativo ? 'active' : 'inactive',
     }))
-  }, [clientes])
+  }, [clientesList])
 
   const handleCadastroSuccess = () => {
     queryClient.invalidateQueries({ queryKey: ['clientes'] })
@@ -61,7 +64,7 @@ export function AlunosPage() {
             </div>
             <button
               onClick={() => setView('cadastro')}
-              className="bg-[#F1FFF3] flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-[#F1FFF3]/80"
+              className="bg-muted flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted/80"
             >
               <UserPlus size={16} />
               Novo Aluno

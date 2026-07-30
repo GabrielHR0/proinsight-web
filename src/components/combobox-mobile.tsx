@@ -19,6 +19,7 @@ export interface ComboboxMobileItem<T> {
   subtitle?: string
   value?: string
   meta?: string
+  status?: 'active' | 'inactive' | 'warning'
 }
 
 interface ComboboxMobileProps<T> {
@@ -170,10 +171,21 @@ export function ComboboxMobile<T>({
                 onClick={() => onSelect(item.data)}
                 className="flex items-start gap-4 text-left"
               >
-                <div
-                  className={`${bg} flex size-14 shrink-0 items-center justify-center rounded-3xl`}
-                >
-                  <Icon size={22} className="text-background" />
+                <div className="relative shrink-0">
+                  <div
+                    className={`${bg} flex size-14 items-center justify-center rounded-3xl`}
+                  >
+                    <Icon size={22} className="text-background" />
+                  </div>
+                  {item.status && (
+                    <span
+                      className={`absolute -top-0.5 -right-0.5 size-3.5 rounded-full border-2 border-background ${
+                        item.status === 'active' ? 'bg-green-500' :
+                        item.status === 'inactive' ? 'bg-muted-foreground' :
+                        'bg-amber-500'
+                      }`}
+                    />
+                  )}
                 </div>
 
                   <div className="flex min-w-0 flex-1 flex-col">

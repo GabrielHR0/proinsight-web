@@ -26,6 +26,7 @@ import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { useAuth } from '@/stores/auth'
 import { clienteService } from '@/services/cliente-service'
 import { avaliacaoService } from '@/services/avaliacao-service'
 import type { AvaliacaoVo2MaxResponse } from '@/services/avaliacao-service'
@@ -67,10 +68,10 @@ const DEFAULTS = {
 }
 
 const PROTOCOLO_ID = 'protocolo_vo2max_esteira_incremental'
-const AVALIADOR_ID = 'avaliador_padrao'
 
 export function AvaliacaoIncrementalPage() {
   const navigate = useNavigate()
+  const { user } = useAuth()
 
   /* ── setup state ── */
   const [phase, setPhase] = useState<Phase>('setup')
@@ -108,7 +109,8 @@ export function AvaliacaoIncrementalPage() {
     queryFn: () => clienteService.listarTodos(),
   })
 
-  const clientesFiltrados = (clientes ?? []).filter(
+  const clientesList = Array.isArray(clientes) ? clientes : []
+  const clientesFiltrados = clientesList.filter(
     (c) =>
       c.fullName.toLowerCase().includes(clientSearch.toLowerCase()) ||
       c.email.toLowerCase().includes(clientSearch.toLowerCase()),
@@ -207,7 +209,7 @@ export function AvaliacaoIncrementalPage() {
       const response = await avaliacaoService.submitVo2Max({
         cliente_id: client.id,
         protocolo_id: PROTOCOLO_ID,
-        avaliador_id: AVALIADOR_ID,
+        avaliador_id: user!.id,
         resultado: speed,
         inclinacao_percent: Number(inclinacao),
         frequencia_cardiaca: hrReadings.length > 0 ? hrReadings[hrReadings.length - 1].bpm : undefined,

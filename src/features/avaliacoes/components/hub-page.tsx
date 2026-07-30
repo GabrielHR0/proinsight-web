@@ -12,8 +12,6 @@ import type { ProtocoloResumo } from '@/types/protocolo'
 
 import { StarIcon } from '@/components/star-icon'
 
-const MOCK_USER_ID = 'user-1'
-
 const CATEGORY_ICON: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
   VO2_MAX: Heart,
   IMC: Weight,
@@ -44,9 +42,9 @@ function SectionIcon({ categoria, className }: { categoria: string; className?: 
 export function HubPage() {
   const navigate = useNavigate()
 
-  const { data: hub, isLoading } = useProtocoloHub(MOCK_USER_ID)
-  const favoritarMutation = useFavoritar(MOCK_USER_ID)
-  const desfavoritarMutation = useDesfavoritar(MOCK_USER_ID)
+  const { data: hub, isLoading } = useProtocoloHub()
+  const favoritarMutation = useFavoritar()
+  const desfavoritarMutation = useDesfavoritar()
 
   const favoritoIds = new Set(hub?.favoritos.map((f) => f.id) ?? [])
 

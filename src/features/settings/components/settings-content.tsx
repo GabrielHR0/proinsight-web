@@ -64,8 +64,8 @@ export function SettingsContent() {
           <Card className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="flex size-10 items-center justify-center rounded-full bg-red-100">
-                  <Trash2 size={18} className="text-red-500" />
+                <div className="flex size-10 items-center justify-center rounded-full bg-destructive/10">
+                  <Trash2 size={18} className="text-destructive" />
                 </div>
                 <div>
                   <p className="text-foreground text-sm font-medium">Limpar dados locais</p>

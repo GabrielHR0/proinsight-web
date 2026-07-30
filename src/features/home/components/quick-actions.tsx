@@ -26,10 +26,10 @@ export function QuickActions() {
           <Tooltip key={label}>
             <TooltipTrigger asChild>
               <button
-                className="bg-[#F1FFF3] flex size-14 shrink-0 cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-[#F1FFF3]/80"
+                className="bg-muted flex size-16 shrink-0 cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-muted/80 active:scale-95"
                 onClick={() => navigate(to, { state })}
               >
-                <Icon size={22} className="text-foreground" />
+                <Icon size={24} className="text-foreground" />
               </button>
             </TooltipTrigger>
             <TooltipContent side="bottom" className="text-xs">

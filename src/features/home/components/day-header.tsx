@@ -1,11 +1,11 @@
 import { Settings, Bell } from 'lucide-react'
 import { useAuth } from '@/stores/auth'
 
-interface GreetingProps {
+interface DayHeaderProps {
   onSettingsClick: () => void
 }
 
-export function Greeting({ onSettingsClick }: GreetingProps) {
+export function DayHeader({ onSettingsClick }: DayHeaderProps) {
   const { user } = useAuth()
 
   return (
@@ -14,7 +14,9 @@ export function Greeting({ onSettingsClick }: GreetingProps) {
         <h1 className="text-primary-foreground text-xl font-semibold">
           Olá{user?.userName ? `, ${user.userName}` : ''}
         </h1>
-        <p className="text-primary-foreground/80 mt-0.5 text-sm">Bem-vindo de volta</p>
+        <p className="text-primary-foreground/80 mt-1 text-sm leading-snug">
+          Próxima avaliação às 14:30
+        </p>
       </div>
 
       <div className="flex items-center gap-3">
@@ -25,8 +27,13 @@ export function Greeting({ onSettingsClick }: GreetingProps) {
           <Settings size={20} className="text-foreground" />
         </button>
 
-        <div className="bg-muted flex size-10 items-center justify-center rounded-full">
-          <Bell size={18} className="text-foreground" />
+        <div className="relative">
+          <div className="bg-muted flex size-10 items-center justify-center rounded-full">
+            <Bell size={18} className="text-foreground" />
+          </div>
+          <span className="absolute -top-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full bg-destructive text-[9px] font-bold text-white">
+            3
+          </span>
         </div>
       </div>
     </header>

@@ -1,47 +1,21 @@
 export function DailyProgress() {
   const completed = 5
   const total = 8
+  const pending = total - completed
+  const pct = (completed / total) * 100
 
   return (
-    <div className="mt-5 flex flex-col items-center gap-2">
-      <div className="relative w-full max-w-[300px]">
-        <div className="bg-primary-foreground/20 h-8 w-full overflow-hidden rounded-full">
-          <div
-            className="bg-background h-full rounded-full transition-all"
-            style={{ width: `${(completed / total) * 100}%` }}
-          />
-        </div>
-
-        <span className="text-primary-foreground absolute left-3 top-1/2 -translate-y-1/2 text-[13px] font-medium italic leading-none">
-          {completed}
-        </span>
-        <span className="text-background absolute right-3 top-1/2 -translate-y-1/2 text-[13px] font-medium italic leading-none">
-          {total}
-        </span>
-      </div>
-
-      <div className="flex items-center gap-1.5 text-[15px] font-normal capitalize text-primary-foreground">
-        <svg
-          width="12"
-          height="12"
-          viewBox="0 0 12 12"
-          fill="none"
-          className="shrink-0 text-primary-foreground"
-        >
-          <path
-            d="M10.1223 0.5H1.87774C1.11684 0.5 0.5 1.11684 0.5 1.87774V10.1223C0.5 10.8832 1.11684 11.5 1.87774 11.5H10.1223C10.8832 11.5 11.5 10.8832 11.5 10.1223V1.87774C11.5 1.11684 10.8832 0.5 10.1223 0.5Z"
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M3.5 6.62603L5.30318 8.5L9.5 3.5"
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
+    <div className="flex w-full flex-row items-center gap-4 rounded-2xl bg-muted px-5 py-3">
+      <div className="relative flex size-12 shrink-0 items-center justify-center">
+        <svg className="absolute inset-0 -rotate-90" width="48" height="48" viewBox="0 0 48 48">
+          <circle cx="24" cy="24" r="20" fill="none" stroke="currentColor" strokeWidth="4" className="text-primary-foreground/20" />
+          <circle cx="24" cy="24" r="20" fill="none" stroke="currentColor" strokeWidth="4" strokeDasharray={`${2 * Math.PI * 20}`} strokeDashoffset={`${2 * Math.PI * 20 * (1 - pct / 100)}`} className="text-link" strokeLinecap="round" />
         </svg>
-        Avaliações concluídas hoje
+        <span className="text-foreground text-sm font-bold">{completed}/{total}</span>
+      </div>
+      <div className="flex flex-1 flex-col gap-0.5">
+        <span className="text-foreground text-sm font-medium">Avaliações hoje</span>
+        <span className="text-link text-xs font-semibold">{pending} pendentes</span>
       </div>
     </div>
   )

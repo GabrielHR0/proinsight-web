@@ -1,13 +1,18 @@
 import { useState } from 'react'
 import { ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Greeting } from './greeting'
+import { DayHeader } from './day-header'
 import { OverviewCard } from './overview-card'
 import { DailyProgress } from './daily-progress'
 import { QuickActions } from './quick-actions'
+import { NextAssessmentCard } from './next-assessment-card'
+import { BirthdayCard } from './birthday-card'
+import { WeeklyPerformance } from './weekly-performance'
+import { RecentActivity } from './recent-activity'
 import { PeriodTabs } from './period-tabs'
 import { ActivityList } from './activity-list'
-import { HighlightCard } from './highlight-card'
+import { ReassessmentList } from './reassessment-list'
+import { Separator } from './separator'
 import { SettingsContent } from '@/features/settings/components/settings-content'
 
 type View = 'home' | 'settings'
@@ -17,13 +22,14 @@ export function HomePage() {
 
   return (
     <div className="flex min-h-dvh flex-col bg-background">
-      {/* Header */}
       <div className="flex flex-col bg-primary px-6 pt-12 pb-24">
         {view === 'home' ? (
           <>
-            <Greeting onSettingsClick={() => setView('settings')} />
-            <OverviewCard />
-            <DailyProgress />
+            <DayHeader onSettingsClick={() => setView('settings')} />
+            <div className="mt-5 mx-auto flex w-full max-w-xs flex-col gap-3">
+              <OverviewCard />
+              <DailyProgress />
+            </div>
             <QuickActions />
           </>
         ) : (
@@ -39,20 +45,25 @@ export function HomePage() {
         )}
       </div>
 
-      {/* Content card — remonta com animação cada vez que a view muda */}
       <div
         key={view}
         className="bg-background -mt-16 z-10 flex flex-1 flex-col rounded-t-[56px] px-6 pt-8 pb-8 shadow-sm animate-in slide-in-from-bottom fade-in duration-500"
       >
         {view === 'home' ? (
-          <>
-            <HighlightCard />
-            <div className="mt-4">
-              <PeriodTabs>
-                <ActivityList />
-              </PeriodTabs>
-            </div>
-          </>
+          <div className="flex flex-col gap-5">
+            <NextAssessmentCard />
+            <PeriodTabs>
+              <ActivityList />
+            </PeriodTabs>
+            <Separator />
+            <ReassessmentList />
+            <Separator />
+            <BirthdayCard />
+            <Separator />
+            <WeeklyPerformance />
+            <Separator />
+            <RecentActivity />
+          </div>
         ) : (
           <SettingsContent />
         )}

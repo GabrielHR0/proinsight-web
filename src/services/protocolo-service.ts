@@ -8,8 +8,8 @@ export const protocoloService = {
     return data
   },
 
-  async listarTodos(userId: string): Promise<ProtocolosListResponse> {
-    const { data } = await api.get<ProtocolosListResponse>('/avaliacoes/protocolos', { params: { userId } })
+  async listarTodos(userId: string): Promise<ProtocoloResumo[] | ProtocolosListResponse> {
+    const { data } = await api.get<ProtocoloResumo[] | ProtocolosListResponse>('/avaliacoes/protocolos', { params: { userId } })
     return data
   },
 

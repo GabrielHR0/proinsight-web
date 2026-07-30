@@ -1,5 +1,13 @@
 import { api } from '@/lib/api'
 
+export interface DadosPreAvaliacao {
+  sexo: 'MASCULINO' | 'FEMININO'
+  idade: number
+  peso_kg: number
+  altura_cm: number
+  data_ultima_avaliacao_imc?: string
+}
+
 export interface AvaliacaoVo2MaxRequest {
   cliente_id: string
   protocolo_id: string
@@ -28,6 +36,11 @@ export interface AvaliacaoVo2MaxResponse {
 }
 
 export const avaliacaoService = {
+  async buscarDadosPreAvaliacao(protocoloId: string, clienteId: string): Promise<DadosPreAvaliacao> {
+    const { data } = await api.get<DadosPreAvaliacao>(`/avaliacoes/${protocoloId}/dados-pre-avaliacao/${clienteId}`)
+    return data
+  },
+
   async submitVo2Max(dados: AvaliacaoVo2MaxRequest): Promise<AvaliacaoVo2MaxResponse> {
     const { data } = await api.post<AvaliacaoVo2MaxResponse>('/avaliacoes/vo2max', dados)
     return data

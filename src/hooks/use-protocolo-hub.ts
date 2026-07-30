@@ -1,11 +1,15 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useAuth } from '@/stores/auth'
 import { protocoloService } from '@/services/protocolo-service'
 import type { HubResponse, ProtocoloDetalhe } from '@/types/protocolo'
 
-export function useProtocoloHub(userId: string) {
+export function useProtocoloHub() {
+  const { user } = useAuth()
+
   return useQuery<HubResponse>({
-    queryKey: ['protocolo-hub', userId],
-    queryFn: () => protocoloService.getHub(userId),
+    queryKey: ['protocolo-hub', user?.id],
+    queryFn: () => protocoloService.getHub(user!.id),
+    enabled: !!user?.id,
     staleTime: 5 * 60 * 1000,
   })
 }
@@ -18,24 +22,26 @@ export function useProtocoloDetalhe(id: string) {
   })
 }
 
-export function useFavoritar(userId: string) {
+export function useFavoritar() {
+  const { user } = useAuth()
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (protocoloId: string) => protocoloService.favoritar(userId, protocoloId),
+    mutationFn: (protocoloId: string) => protocoloService.favoritar(user!.id, protocoloId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['protocolo-hub', userId] })
+      queryClient.invalidateQueries({ queryKey: ['protocolo-hub', user?.id] })
     },
   })
 }
 
-export function useDesfavoritar(userId: string) {
+export function useDesfavoritar() {
+  const { user } = useAuth()
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (protocoloId: string) => protocoloService.desfavoritar(userId, protocoloId),
+    mutationFn: (protocoloId: string) => protocoloService.desfavoritar(user!.id, protocoloId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['protocolo-hub', userId] })
+      queryClient.invalidateQueries({ queryKey: ['protocolo-hub', user?.id] })
     },
   })
 }

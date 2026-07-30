@@ -4,6 +4,7 @@ export interface Cliente {
   email: string
   phone: string
   cpf: string
+  dataNascimento?: string
   endereco?: Endereco
   academiaId?: string
   avaliadorId?: string
@@ -23,10 +24,49 @@ export interface ClienteFormData {
   email: string
   phone: string
   cpf: string
+  dataNascimento: string
   rua: string
   numero: string
   cidade: string
   estado: string
   cep: string
   ativo?: boolean
+}
+
+export interface ComImcRequest {
+  fullName: string
+  email: string
+  phone: string
+  cpf: string
+  dataNascimento: string
+  rua?: string
+  numero?: string
+  cidade?: string
+  estado?: string
+  cep?: string
+  academiaId?: string
+  avaliadorId?: string
+  protocoloId?: string
+  pesoGramas?: number
+  alturaCm?: number
+}
+
+export interface AvaliacaoResult {
+  classificacao: string
+  protocolo_nome: string
+  protocolo_id: string
+  avaliador_id: string
+  cliente_id: string
+  avaliacao_id: string
+  status: string
+  extras: {
+    imc?: number
+    peso_gramas?: number
+    altura_cm?: number
+  }
+}
+
+export interface ComImcResponse {
+  cliente: Cliente
+  avaliacao?: AvaliacaoResult
 }

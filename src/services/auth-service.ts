@@ -1,13 +1,18 @@
 import { api } from '@/lib/api'
 import type { LoginInput, LoginResponse, RegisterInput, User } from '@/types/auth'
 
+function stripConfirmPassword(data: RegisterInput): Record<string, unknown> {
+  const { confirmPassword, ...payload } = data
+  return payload
+}
+
 export const authService = {
   login(data: LoginInput) {
     return api.post<LoginResponse>('/auth/login', data)
   },
 
   register(data: RegisterInput) {
-    return api.post<LoginResponse>('/auth/register', data)
+    return api.post<LoginResponse>('/auth/register', stripConfirmPassword(data))
   },
 
   refresh(refreshToken: string) {

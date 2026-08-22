@@ -1,8 +1,9 @@
 import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Loader2, Heart, Weight, Zap, Dumbbell, Fence, Activity } from 'lucide-react'
+import { Loader2, Activity } from 'lucide-react'
+import { CATEGORY_ICON } from '@/components/category-icons'
 import { PageLayout } from '@/components/layout/page-layout'
-import { Button } from '@/components/ui/button'
+import { BackButton } from '@/components/ui/back-button'
 import { EmptyState } from '@/components/empty-state'
 import { ComboboxMobile } from '@/components/combobox-mobile'
 import type { ComboboxMobileItem } from '@/components/combobox-mobile'
@@ -11,14 +12,6 @@ import { cn } from '@/lib/utils'
 import type { ProtocoloResumo } from '@/types/protocolo'
 
 import { StarIcon } from '@/components/star-icon'
-
-const CATEGORY_ICON: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
-  VO2_MAX: Heart,
-  IMC: Weight,
-  BIOIMPEDANCIA: Zap,
-  FORCA: Dumbbell,
-  FLEXIBILIDADE: Fence,
-}
 
 const CATEGORY_LABEL: Record<string, string> = {
   VO2_MAX: 'VO₂ Máx',
@@ -138,9 +131,7 @@ export function HubPage() {
     <PageLayout
       header={
         <div className="flex items-center gap-3">
-          <Button variant="outline" size="icon" onClick={() => navigate('/')} className="rounded-full">
-            <ArrowLeft className="size-5" />
-          </Button>
+          <BackButton onClick={() => navigate('/')} />
           <div>
             <h1 className="text-foreground text-2xl font-bold">Protocolos</h1>
             <p className="text-muted-foreground text-sm">Selecione um protocolo para realizar</p>

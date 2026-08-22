@@ -1,7 +1,8 @@
 import { useEffect, useState, useMemo } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { Users, ArrowLeft, UserPlus, Loader2 } from 'lucide-react'
+import { Users, UserPlus, Loader2 } from 'lucide-react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { BackButton } from '@/components/ui/back-button'
 import { Button } from '@/components/ui/button'
 import { ComboboxMobile } from '@/components/combobox-mobile'
 import type { ComboboxMobileItem } from '@/components/combobox-mobile'
@@ -56,6 +57,7 @@ export function AlunosPage() {
       <div className="flex flex-col bg-primary px-6 pt-12 pb-24">
         {view === 'list' ? (
           <div className="flex items-center gap-3">
+            <BackButton onClick={() => navigate(-1)} />
             <div className="flex-1">
               <h1 className="text-primary-foreground text-xl font-bold">Alunos</h1>
               <p className="text-primary-foreground/80 mt-0.5 text-sm">
@@ -64,7 +66,7 @@ export function AlunosPage() {
             </div>
             <button
               onClick={() => setView('cadastro')}
-              className="bg-muted flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted/80"
+              className="bg-muted flex shrink-0 items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted/80"
             >
               <UserPlus size={16} />
               Novo Aluno
@@ -72,14 +74,7 @@ export function AlunosPage() {
           </div>
         ) : (
           <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => setView('list')}
-              className="rounded-full border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/20"
-            >
-              <ArrowLeft className="size-5" />
-            </Button>
+            <BackButton onClick={() => setView('list')} />
             <div>
               <h1 className="text-primary-foreground text-xl font-bold">Novo Aluno</h1>
               <p className="text-primary-foreground/80 mt-0.5 text-sm">Cadastre um novo aluno</p>

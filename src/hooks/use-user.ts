@@ -9,6 +9,7 @@ export function useCurrentUser() {
     queryKey: ['auth', 'me'],
     queryFn: () => authService.getMe(),
     enabled: isAuthenticated,
+    retry: false,
     staleTime: 5 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
     refetchOnWindowFocus: false,

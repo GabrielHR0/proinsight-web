@@ -81,7 +81,7 @@ export function CadastroClienteForm({ onSuccess, onCancel }: CadastroClienteForm
           phone: form.phone,
           cpf: form.cpf,
           dataNascimento: form.dataNascimento,
-          sexo: form.sexo,
+          sexo: form.sexo!,
           avaliadorId: user?.id,
           rua: form.rua || undefined,
           numero: form.numero || undefined,

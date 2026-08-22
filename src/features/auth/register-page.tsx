@@ -31,8 +31,18 @@ export function RegisterPage() {
     resolver: zodResolver(registerAcademiaSchema),
   })
 
-  const form = isAcademia ? academiaForm : userForm
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = form
+  const { handleSubmit: userHandleSubmit, formState: userFormState } = userForm
+  const { handleSubmit: academiaHandleSubmit, formState: academiaFormState } = academiaForm
+
+  const handleSubmitForm = isAcademia ? academiaHandleSubmit : userHandleSubmit
+  const { isSubmitting, errors } = isAcademia ? academiaFormState : userFormState
+
+  // Helper: register field from the active form (works for fields shared by both schemas)
+  function reg(fieldName: string) {
+    return isAcademia
+      ? academiaForm.register(fieldName as keyof RegisterAcademiaInput)
+      : userForm.register(fieldName as keyof RegisterUserInput)
+  }
 
   async function onSubmit(data: RegisterUserInput | RegisterAcademiaInput) {
     setError(null)
@@ -107,7 +117,7 @@ export function RegisterPage() {
             </button>
           </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          <form onSubmit={handleSubmitForm(onSubmit)} className="space-y-5">
             <div className="group">
               <label htmlFor="email" className="text-foreground mb-1.5 block text-sm font-medium">E-mail</label>
               <div className="relative">
@@ -117,7 +127,7 @@ export function RegisterPage() {
                   type="email"
                   autoComplete="email"
                   className="bg-background text-foreground ring-border focus:ring-primary/30 w-full rounded-xl border border-border py-2.5 pl-10 pr-3 text-sm outline-none ring-0 transition-all focus:ring-2"
-                  {...register('email')}
+                  {...reg('email')}
                 />
               </div>
               {errors.email && (
@@ -134,7 +144,7 @@ export function RegisterPage() {
                 <input
                   id="userName"
                   className="bg-background text-foreground ring-border focus:ring-primary/30 w-full rounded-xl border border-border py-2.5 pl-10 pr-3 text-sm outline-none ring-0 transition-all focus:ring-2"
-                  {...register('userName')}
+                  {...reg('userName')}
                 />
               </div>
               {errors.userName && (
@@ -153,7 +163,7 @@ export function RegisterPage() {
                     id="cref"
                     className="bg-background text-foreground ring-border focus:ring-primary/30 w-full rounded-xl border border-border py-2.5 pl-10 pr-3 text-sm outline-none ring-0 transition-all focus:ring-2"
                     placeholder="Ex: 012345-G/RN"
-                    {...register('cref')}
+                    {...reg('cref')}
                   />
                 </div>
                 {errors.cref && (
@@ -170,7 +180,7 @@ export function RegisterPage() {
                     id="cpf"
                     className="bg-background text-foreground ring-border focus:ring-primary/30 w-full rounded-xl border border-border py-2.5 pl-10 pr-3 text-sm outline-none ring-0 transition-all focus:ring-2"
                     placeholder="000.000.000-00"
-                    {...register('cpf')}
+                    {...reg('cpf')}
                   />
                 </div>
                 {errors.cpf && (
@@ -190,7 +200,7 @@ export function RegisterPage() {
                   type={showPassword ? 'text' : 'password'}
                   autoComplete="new-password"
                   className="bg-background text-foreground ring-border focus:ring-primary/30 w-full rounded-xl border border-border py-2.5 pl-10 pr-10 text-sm outline-none ring-0 transition-all focus:ring-2"
-                  {...register('password')}
+                  {...reg('password')}
                 />
                 <button
                   type="button"
@@ -217,7 +227,7 @@ export function RegisterPage() {
                   type="password"
                   autoComplete="new-password"
                   className="bg-background text-foreground ring-border focus:ring-primary/30 w-full rounded-xl border border-border py-2.5 pl-10 pr-3 text-sm outline-none ring-0 transition-all focus:ring-2"
-                  {...register('confirmPassword')}
+                  {...reg('confirmPassword')}
                 />
               </div>
               {errors.confirmPassword && (
@@ -242,12 +252,12 @@ export function RegisterPage() {
                       <input
                         id="academiaNome"
                         className="bg-background text-foreground ring-border focus:ring-primary/30 w-full rounded-xl border border-border py-2.5 pl-10 pr-3 text-sm outline-none ring-0 transition-all focus:ring-2"
-                        {...register('academiaNome')}
+                        {...academiaForm.register('academiaNome')}
                       />
                     </div>
-                    {errors.academiaNome && (
+                    {academiaForm.formState.errors.academiaNome && (
                       <p className="text-destructive mt-1 flex items-center gap-1 text-xs">
-                        <AlertCircle size={12} /> {errors.academiaNome.message}
+                        <AlertCircle size={12} /> {academiaForm.formState.errors.academiaNome.message}
                       </p>
                     )}
                   </div>
@@ -257,14 +267,14 @@ export function RegisterPage() {
                       <label htmlFor="cnpj" className="text-foreground mb-1.5 block text-sm font-medium">CNPJ <span className="text-muted-foreground font-normal">(opcional)</span></label>
                       <div className="relative">
                         <FileText size={16} className="text-muted-foreground group-focus-within:text-primary absolute left-3 top-1/2 -translate-y-1/2 transition-colors" />
-                        <input id="cnpj" className="bg-background text-foreground ring-border focus:ring-primary/30 w-full rounded-xl border border-border py-2.5 pl-10 pr-3 text-sm outline-none ring-0 transition-all focus:ring-2" {...register('cnpj')} />
+                        <input id="cnpj" className="bg-background text-foreground ring-border focus:ring-primary/30 w-full rounded-xl border border-border py-2.5 pl-10 pr-3 text-sm outline-none ring-0 transition-all focus:ring-2" {...academiaForm.register('cnpj')} />
                       </div>
                     </div>
                     <div className="group">
                       <label htmlFor="telefone" className="text-foreground mb-1.5 block text-sm font-medium">Telefone <span className="text-muted-foreground font-normal">(opcional)</span></label>
                       <div className="relative">
                         <Phone size={16} className="text-muted-foreground group-focus-within:text-primary absolute left-3 top-1/2 -translate-y-1/2 transition-colors" />
-                        <input id="telefone" className="bg-background text-foreground ring-border focus:ring-primary/30 w-full rounded-xl border border-border py-2.5 pl-10 pr-3 text-sm outline-none ring-0 transition-all focus:ring-2" {...register('telefone')} />
+                        <input id="telefone" className="bg-background text-foreground ring-border focus:ring-primary/30 w-full rounded-xl border border-border py-2.5 pl-10 pr-3 text-sm outline-none ring-0 transition-all focus:ring-2" {...academiaForm.register('telefone')} />
                       </div>
                     </div>
                   </div>
@@ -273,7 +283,7 @@ export function RegisterPage() {
                     <label htmlFor="razaoSocial" className="text-foreground mb-1.5 block text-sm font-medium">Razão social <span className="text-muted-foreground font-normal">(opcional)</span></label>
                     <div className="relative">
                       <FileText size={16} className="text-muted-foreground group-focus-within:text-primary absolute left-3 top-1/2 -translate-y-1/2 transition-colors" />
-                      <input id="razaoSocial" className="bg-background text-foreground ring-border focus:ring-primary/30 w-full rounded-xl border border-border py-2.5 pl-10 pr-3 text-sm outline-none ring-0 transition-all focus:ring-2" {...register('razaoSocial')} />
+                        <input id="razaoSocial" className="bg-background text-foreground ring-border focus:ring-primary/30 w-full rounded-xl border border-border py-2.5 pl-10 pr-3 text-sm outline-none ring-0 transition-all focus:ring-2" {...academiaForm.register('razaoSocial')} />
                     </div>
                   </div>
                 </div>
@@ -289,11 +299,11 @@ export function RegisterPage() {
                       <label htmlFor="endereco.rua" className="text-foreground mb-1.5 block text-sm font-medium">Rua</label>
                       <div className="relative">
                         <MapPin size={16} className="text-muted-foreground group-focus-within:text-primary absolute left-3 top-1/2 -translate-y-1/2 transition-colors" />
-                        <input id="endereco.rua" className="bg-background text-foreground ring-border focus:ring-primary/30 w-full rounded-xl border border-border py-2.5 pl-10 pr-3 text-sm outline-none ring-0 transition-all focus:ring-2" {...register('endereco.rua')} />
+                        <input id="endereco.rua" className="bg-background text-foreground ring-border focus:ring-primary/30 w-full rounded-xl border border-border py-2.5 pl-10 pr-3 text-sm outline-none ring-0 transition-all focus:ring-2" {...academiaForm.register('endereco.rua')} />
                       </div>
-                      {errors.endereco?.rua && (
+                      {academiaForm.formState.errors.endereco?.rua && (
                         <p className="text-destructive mt-1 flex items-center gap-1 text-xs">
-                          <AlertCircle size={12} /> {errors.endereco.rua.message}
+                          <AlertCircle size={12} /> {academiaForm.formState.errors.endereco.rua.message}
                         </p>
                       )}
                     </div>
@@ -301,32 +311,32 @@ export function RegisterPage() {
                     <div className="grid grid-cols-2 gap-3">
                       <div className="group">
                         <label htmlFor="endereco.numero" className="text-foreground mb-1.5 block text-sm font-medium">Número</label>
-                        <input id="endereco.numero" className="bg-background text-foreground ring-border focus:ring-primary/30 w-full rounded-xl border border-border py-2.5 px-3 text-sm outline-none ring-0 transition-all focus:ring-2" {...register('endereco.numero')} />
+                        <input id="endereco.numero" className="bg-background text-foreground ring-border focus:ring-primary/30 w-full rounded-xl border border-border py-2.5 px-3 text-sm outline-none ring-0 transition-all focus:ring-2" {...academiaForm.register('endereco.numero')} />
                       </div>
                       <div className="group">
                         <label htmlFor="endereco.cidade" className="text-foreground mb-1.5 block text-sm font-medium">Cidade</label>
-                        <input id="endereco.cidade" className="bg-background text-foreground ring-border focus:ring-primary/30 w-full rounded-xl border border-border py-2.5 px-3 text-sm outline-none ring-0 transition-all focus:ring-2" {...register('endereco.cidade')} />
-                        {errors.endereco?.cidade && (
+                        <input id="endereco.cidade" className="bg-background text-foreground ring-border focus:ring-primary/30 w-full rounded-xl border border-border py-2.5 px-3 text-sm outline-none ring-0 transition-all focus:ring-2" {...academiaForm.register('endereco.cidade')} />
+                        {academiaForm.formState.errors.endereco?.cidade && (
                           <p className="text-destructive mt-1 flex items-center gap-1 text-xs">
-                            <AlertCircle size={12} /> {errors.endereco.cidade.message}
+                            <AlertCircle size={12} /> {academiaForm.formState.errors.endereco.cidade.message}
                           </p>
                         )}
                       </div>
                       <div className="group">
                         <label htmlFor="endereco.estado" className="text-foreground mb-1.5 block text-sm font-medium">Estado</label>
-                        <input id="endereco.estado" className="bg-background text-foreground ring-border focus:ring-primary/30 w-full rounded-xl border border-border py-2.5 px-3 text-sm outline-none ring-0 transition-all focus:ring-2" {...register('endereco.estado')} />
-                        {errors.endereco?.estado && (
+                        <input id="endereco.estado" className="bg-background text-foreground ring-border focus:ring-primary/30 w-full rounded-xl border border-border py-2.5 px-3 text-sm outline-none ring-0 transition-all focus:ring-2" {...academiaForm.register('endereco.estado')} />
+                        {academiaForm.formState.errors.endereco?.estado && (
                           <p className="text-destructive mt-1 flex items-center gap-1 text-xs">
-                            <AlertCircle size={12} /> {errors.endereco.estado.message}
+                            <AlertCircle size={12} /> {academiaForm.formState.errors.endereco.estado.message}
                           </p>
                         )}
                       </div>
                       <div className="group">
                         <label htmlFor="endereco.cep" className="text-foreground mb-1.5 block text-sm font-medium">CEP</label>
-                        <input id="endereco.cep" className="bg-background text-foreground ring-border focus:ring-primary/30 w-full rounded-xl border border-border py-2.5 px-3 text-sm outline-none ring-0 transition-all focus:ring-2" {...register('endereco.cep')} />
-                        {errors.endereco?.cep && (
+                        <input id="endereco.cep" className="bg-background text-foreground ring-border focus:ring-primary/30 w-full rounded-xl border border-border py-2.5 px-3 text-sm outline-none ring-0 transition-all focus:ring-2" {...academiaForm.register('endereco.cep')} />
+                        {academiaForm.formState.errors.endereco?.cep && (
                           <p className="text-destructive mt-1 flex items-center gap-1 text-xs">
-                            <AlertCircle size={12} /> {errors.endereco.cep.message}
+                            <AlertCircle size={12} /> {academiaForm.formState.errors.endereco.cep.message}
                           </p>
                         )}
                       </div>

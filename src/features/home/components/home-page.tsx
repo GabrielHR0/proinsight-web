@@ -1,6 +1,5 @@
 import { useState } from 'react'
-import { ArrowLeft } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { BackButton } from '@/components/ui/back-button'
 import { DayHeader } from './day-header'
 import { OverviewCard } from './overview-card'
 import { DailyProgress } from './daily-progress'
@@ -34,9 +33,7 @@ export function HomePage() {
           </>
         ) : (
           <div className="flex items-center gap-3">
-            <Button variant="outline" size="icon" onClick={() => setView('home')} className="rounded-full border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/20">
-              <ArrowLeft className="size-5" />
-            </Button>
+            <BackButton onClick={() => setView('home')} />
             <div>
               <h1 className="text-primary-foreground text-2xl font-bold">Configurações</h1>
               <p className="text-primary-foreground/80 text-sm">Personalize sua experiência</p>

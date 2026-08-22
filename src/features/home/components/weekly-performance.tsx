@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { AnimatedNumber } from '@/components/ui/animated-number'
 
 type Periodo = 'diario' | 'semanal' | 'mensal'
 
@@ -163,7 +164,9 @@ export function WeeklyPerformance() {
       <div className="mb-3 flex items-end justify-between">
         <div>
           <span className="text-foreground text-2xl font-bold">
-            {kpi.unidade === 'R$' ? `R$ ${kpi.valor}` : `${kpi.valor}${kpi.unidade}`}
+            {kpi.unidade === 'R$' ? `R$ ` : ''}
+            <AnimatedNumber key={`${periodo}-${kpi.id}`} value={kpi.valor} />
+            {kpi.unidade !== 'R$' ? kpi.unidade : ''}
           </span>
           <span className="text-muted-foreground ml-1 text-xs">
             / {kpi.unidade === 'R$' ? `R$ ${kpi.meta}` : `${kpi.meta}${kpi.unidade}`}
@@ -179,13 +182,13 @@ export function WeeklyPerformance() {
           const h = max === 0 ? 0 : (valor / max) * 100
           const isActive = i === kpi.dados.length - 1
           return (
-            <div key={i} className="flex flex-1 flex-col items-center gap-1">
+            <div key={`${periodo}-${kpi.id}-${i}`} className="flex flex-1 flex-col items-center gap-1">
               <span className={`text-[10px] font-bold ${isActive ? 'text-primary' : 'text-muted-foreground'}`}>
                 {kpi.unidade === '%' ? `${valor}` : valor}
               </span>
               <div className="w-full flex items-end" style={{ height: '80px' }}>
                 <div
-                  className={`w-full rounded-t-lg transition-all ${isActive ? 'bg-primary dark:bg-secondary' : 'bg-primary/20 dark:bg-secondary/30'}`}
+                  className={`w-full rounded-t-lg transition-[height] duration-500 ease-out ${isActive ? 'bg-primary dark:bg-secondary' : 'bg-primary/20 dark:bg-secondary/30'}`}
                   style={{ height: `${Math.max(h, 8)}%` }}
                 />
               </div>

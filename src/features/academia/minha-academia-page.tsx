@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate, Navigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { useMinhaAcademia, useAtualizarAcademia } from '@/hooks/use-minha-academia'

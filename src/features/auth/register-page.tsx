@@ -23,14 +23,16 @@ export function RegisterPage() {
 
   const isAcademia = tab === 'academia'
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors, isSubmitting },
-  } = useForm<RegisterUserInput | RegisterAcademiaInput>({
-    resolver: zodResolver(isAcademia ? registerAcademiaSchema : registerUserSchema),
+  const userForm = useForm<RegisterUserInput>({
+    resolver: zodResolver(registerUserSchema),
   })
+
+  const academiaForm = useForm<RegisterAcademiaInput>({
+    resolver: zodResolver(registerAcademiaSchema),
+  })
+
+  const form = isAcademia ? academiaForm : userForm
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = form
 
   async function onSubmit(data: RegisterUserInput | RegisterAcademiaInput) {
     setError(null)
@@ -55,7 +57,8 @@ export function RegisterPage() {
   function switchTab(newTab: Tab) {
     setTab(newTab)
     setError(null)
-    reset()
+    userForm.reset()
+    academiaForm.reset()
   }
 
   return (

@@ -24,7 +24,7 @@ import { DetalheMetrica } from '@/features/historico/components/detalhe-metrica'
 import { ResumoEvolucao } from '@/features/historico/components/comparacao-avaliacoes'
 import { HistoricoCards } from '@/features/historico/components/historico-cards'
 import { formatarData, rotuloSexo } from '@/features/historico/components/classificacao-utils'
-import { calcularIdade, iniciais, tempoAcompanhamento } from '@/features/historico/components/laudo-utils'
+import { calcularIdade, tempoAcompanhamento } from '@/features/historico/components/laudo-utils'
 import type { Metrica } from '@/features/historico/components/laudo-utils'
 import type { AvaliacaoHistorico } from '@/types/avaliacao'
 import type { Cliente } from '@/types/cliente'
@@ -124,7 +124,7 @@ export function ClienteDetailPage() {
     phone: '',
     cpf: '',
     dataNascimento: '',
-    sexo: '' as Sexo | '',
+    sexo: undefined as Sexo | undefined,
     rua: '',
     numero: '',
     cidade: '',
@@ -141,7 +141,7 @@ export function ClienteDetailPage() {
         phone: cliente.phone,
         cpf: cliente.cpf,
         dataNascimento: cliente.dataNascimento ?? '',
-        sexo: cliente.sexo ?? '',
+        sexo: cliente.sexo ?? undefined,
         rua: cliente.endereco?.rua ?? '',
         numero: cliente.endereco?.numero ?? '',
         cidade: cliente.endereco?.cidade ?? '',

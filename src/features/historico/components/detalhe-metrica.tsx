@@ -85,7 +85,7 @@ export function DetalheMetrica({ avaliacoes, metrica }: DetalheMetricaProps) {
         : 'text-red-500 dark:text-red-400'
 
   const isPeso = metrica === 'peso' && alturaM != null
-  const classificacaoChave = isPeso ? classificarPeso(valorAtual, alturaM!) : null
+  const classificacaoChave = isPeso ? classificarPeso(valorAtual, alturaM!) : undefined
   const classificacaoLegivel = classificacaoChave
     ? { ABAIXO_DO_PESO: 'Abaixo do peso', NORMAL: 'Normal', SOBREPESO: 'Sobrepeso', OBESIDADE_I: 'Obesidade I', OBESIDADE_II: 'Obesidade II', OBESIDADE_III: 'Obesidade III' }[classificacaoChave] ?? classificacaoChave
     : (atual.classificacao_legivel ?? atual.classificacao ?? '')

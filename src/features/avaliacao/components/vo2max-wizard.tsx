@@ -33,14 +33,6 @@ function formatTime(seconds: number): string {
   return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
 }
 
-function calcVo2Max(speedKmh: number, inclinePercent: number): number {
-  const velMmin = (speedKmh * 1000) / 60
-  if (inclinePercent > 0) {
-    return 0.2 * velMmin + 0.9 * velMmin * (inclinePercent / 100) + 3.5
-  }
-  return 0.2 * velMmin + 3.5
-}
-
 interface HeartRateReading {
   time: number
   bpm: number
@@ -54,7 +46,7 @@ interface Vo2MaxWizardProps {
   onDone: () => void
 }
 
-export function Vo2MaxWizard({ clienteId, clienteNome, protocoloId, onExit, onDone }: Vo2MaxWizardProps) {
+export function Vo2MaxWizard({ clienteId, clienteNome, protocoloId, onDone }: Vo2MaxWizardProps) {
   const { user } = useAuth()
   const [step, setStep] = useState(0)
 
@@ -127,7 +119,6 @@ export function Vo2MaxWizard({ clienteId, clienteNome, protocoloId, onExit, onDo
   useEffect(() => clearTimer, [clearTimer])
 
   const stageDurationSec = Number(stageDuration)
-  const stageSpeed = Number(startSpeed) + (stage - 1) * Number(speedIncrement)
   const stageProgressPct = stageDurationSec > 0 ? Math.min((stageElapsed / stageDurationSec) * 100, 100) : 0
 
   const handleStartTest = useCallback(() => {
@@ -202,7 +193,6 @@ export function Vo2MaxWizard({ clienteId, clienteNome, protocoloId, onExit, onDo
   /* ── derived ── */
   const dadosOk = dados.sexo !== '' && Number(dados.pesoKg) > 0 && Number(dados.alturaCm) > 0
   const isFirst = step === 0
-  const isLast = step === STEPS.length - 1
 
   const displayedSteps = testPhase === 'running'
     ? STEPS.map((s, i) => (i === 1 ? { label: 'Teste' } : s))

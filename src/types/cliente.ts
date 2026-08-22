@@ -28,7 +28,7 @@ export interface ClienteFormData {
   phone: string
   cpf: string
   dataNascimento: string
-  sexo: Sexo
+  sexo?: Sexo
   rua: string
   numero: string
   cidade: string

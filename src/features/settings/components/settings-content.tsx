@@ -21,9 +21,7 @@ export function SettingsContent() {
           <Card className="p-4">
             <div className="relative flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
-                  <Palette size={20} className="text-primary" />
-                </div>
+                <Palette size={20} className="text-primary shrink-0" />
                 <div>
                   <p className="text-foreground text-sm font-medium">Aparência</p>
                   <p className="text-muted-foreground text-xs">Escolha entre tema claro e escuro</p>
@@ -64,9 +62,7 @@ export function SettingsContent() {
           <Card className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="flex size-10 items-center justify-center rounded-full bg-destructive/10">
-                  <Trash2 size={18} className="text-destructive" />
-                </div>
+                <Trash2 size={18} className="text-destructive shrink-0" />
                 <div>
                   <p className="text-foreground text-sm font-medium">Limpar dados locais</p>
                   <p className="text-muted-foreground text-xs">Remove cache e preferências salvas</p>
@@ -95,9 +91,7 @@ export function SettingsContent() {
         <div className="grid grid-cols-1 gap-3">
           <Card className="p-4">
             <div className="flex items-center gap-3">
-              <div className="flex size-10 items-center justify-center rounded-full bg-muted">
-                <Info size={18} className="text-muted-foreground" />
-              </div>
+              <Info size={18} className="text-muted-foreground shrink-0" />
               <div>
                 <p className="text-foreground text-sm font-medium">ProInsight</p>
                 <p className="text-muted-foreground text-xs">Versão 1.0.0</p>

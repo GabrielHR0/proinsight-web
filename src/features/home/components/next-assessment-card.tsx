@@ -105,7 +105,7 @@ export function NextAssessmentCard() {
       <button
         type="button"
         onClick={() => navigate('/avaliacao/nova')}
-        className="flex w-full items-center justify-between rounded-[31px] bg-primary px-6 py-5 text-left shadow-lg transition-transform hover:scale-[1.02] active:scale-[0.98]"
+        className="flex w-full items-center justify-between rounded-[31px] border border-primary bg-primary px-6 py-5 text-left shadow-sm transition-transform hover:scale-[1.02] active:scale-[0.98]"
       >
         <div>
           <p className="text-primary-foreground text-base font-semibold">

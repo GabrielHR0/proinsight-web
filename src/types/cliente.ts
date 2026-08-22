@@ -1,3 +1,5 @@
+export type Sexo = 'MASCULINO' | 'FEMININO'
+
 export interface Cliente {
   id: string
   fullName: string
@@ -5,6 +7,7 @@ export interface Cliente {
   phone: string
   cpf: string
   dataNascimento?: string
+  sexo?: Sexo
   endereco?: Endereco
   academiaId?: string
   avaliadorId?: string
@@ -25,6 +28,7 @@ export interface ClienteFormData {
   phone: string
   cpf: string
   dataNascimento: string
+  sexo: Sexo
   rua: string
   numero: string
   cidade: string
@@ -39,6 +43,7 @@ export interface ComImcRequest {
   phone: string
   cpf: string
   dataNascimento: string
+  sexo: Sexo
   rua?: string
   numero?: string
   cidade?: string

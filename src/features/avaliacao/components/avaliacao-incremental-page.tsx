@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import {
-  ArrowLeft,
   Heart,
   Play,
   SkipForward,
@@ -18,6 +17,7 @@ import {
   Activity,
 } from 'lucide-react'
 import { PageLayout } from '@/components/layout/page-layout'
+import { BackButton } from '@/components/ui/back-button'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -237,9 +237,7 @@ export function AvaliacaoIncrementalPage() {
       <PageLayout
         header={
           <div className="flex items-center gap-3">
-            <Button variant="outline" size="icon" onClick={() => navigate('/avaliacao/nova')} className="rounded-full">
-              <ArrowLeft className="size-5" />
-            </Button>
+            <BackButton onClick={() => navigate('/avaliacao/nova')} />
             <div>
               <h1 className="text-primary-foreground text-xl font-bold">Teste Incremental</h1>
               <p className="text-primary-foreground/80 mt-0.5 text-sm">VO₂max — Esteira</p>
@@ -514,9 +512,7 @@ export function AvaliacaoIncrementalPage() {
       <PageLayout
         header={
           <div className="flex items-center gap-3">
-            <Button variant="outline" size="icon" onClick={() => navigate('/avaliacao/nova')} className="rounded-full">
-              <ArrowLeft className="size-5" />
-            </Button>
+            <BackButton onClick={() => navigate('/avaliacao/nova')} />
             <div>
               <h1 className="text-primary-foreground text-xl font-bold">Resultado</h1>
               <p className="text-primary-foreground/80 mt-0.5 text-sm">Teste Incremental</p>
@@ -624,9 +620,7 @@ export function AvaliacaoIncrementalPage() {
       <PageLayout
         header={
           <div className="flex items-center gap-3">
-            <Button variant="outline" size="icon" onClick={() => navigate('/avaliacoes')} className="rounded-full">
-              <ArrowLeft className="size-5" />
-            </Button>
+            <BackButton onClick={() => navigate('/avaliacoes')} />
             <div>
               <h1 className="text-primary-foreground text-xl font-bold">Avaliação Concluída</h1>
             </div>

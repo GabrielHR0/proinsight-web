@@ -1,39 +1,54 @@
 import { Menu, Home, BarChart3, Clock, CircleUser } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
-
-interface NavItem {
-  to: string
-  icon: React.ComponentType<{ size?: number; className?: string }>
-}
-
-const items: NavItem[] = [
-  { to: '/menu', icon: Menu },
-  { to: '/', icon: Home },
-  { to: '/avaliacoes', icon: BarChart3 },
-  { to: '/historico', icon: Clock },
-  { to: '/perfil', icon: CircleUser },
-]
+import { useMenuDrawer } from '@/stores/menu-drawer'
+import { cn } from '@/lib/utils'
 
 export function BottomNav() {
+  const { toggle } = useMenuDrawer()
+
+  const items: { to?: string; icon: React.ComponentType<{ size?: number; className?: string }>; action?: () => void }[] = [
+    { action: toggle, icon: Menu },
+    { to: '/', icon: Home },
+    { to: '/avaliacoes', icon: BarChart3 },
+    { to: '/historico', icon: Clock },
+    { to: '/perfil', icon: CircleUser },
+  ]
+
   return (
-    <nav className="bg-surface fixed inset-x-0 bottom-0 z-50 flex items-center justify-around rounded-t-[40px] px-4 pt-2 pb-6 shadow-lg md:hidden">
-      {items.map(({ to, icon: Icon }) => (
-        <NavLink
-          key={to}
-          to={to}
-          end={to === '/'}
-          className="relative flex min-h-[44px] min-w-[52px] items-center justify-center"
-        >
-          {({ isActive }) => (
-            <>
-              {isActive && (
-                <div className="absolute inset-0 mx-auto w-[52px] rounded-[22px] bg-primary shadow-lg shadow-primary/30" />
-              )}
-              <Icon size={24} className={`relative transition-all ${isActive ? 'text-primary-foreground scale-110' : 'text-muted-foreground'}`} />
-            </>
-          )}
-        </NavLink>
-      ))}
+    <nav className="bg-background fixed inset-x-0 bottom-0 z-[60] flex items-center justify-around rounded-t-[32px] border-t border-border/70 px-2 pt-2 pb-3 md:hidden" style={{ boxShadow: '0 -4px 20px rgba(0,0,0,0.08)' }}>
+      {items.map((item, i) =>
+        item.to ? (
+          <NavLink
+            key={item.to}
+            to={item.to}
+            end={item.to === '/'}
+            className="flex items-center justify-center"
+          >
+            {({ isActive }) => (
+              <div className="flex size-11 items-center justify-center rounded-2xl transition-colors duration-200">
+                <item.icon
+                  size={20}
+                  className={cn(
+                    'transition-colors duration-200',
+                    isActive ? 'text-primary' : 'text-muted-foreground',
+                  )}
+                />
+              </div>
+            )}
+          </NavLink>
+        ) : (
+          <button
+            key={`action-${i}`}
+            type="button"
+            onClick={item.action}
+            className="flex items-center justify-center"
+          >
+            <div className="flex size-11 items-center justify-center rounded-2xl transition-all duration-200">
+              <item.icon size={20} className="text-muted-foreground transition-all duration-200" />
+            </div>
+          </button>
+        ),
+      )}
     </nav>
   )
 }

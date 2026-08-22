@@ -1,23 +1,18 @@
-import { useState, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Loader2, Search, Heart, Weight, Zap, Dumbbell, Fence, Activity, User, ChevronRight } from 'lucide-react'
+import { useState, useMemo, useEffect } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { Loader2, Search, Activity, User, ChevronRight } from 'lucide-react'
+import { CATEGORY_ICON } from '@/components/category-icons'
 import { useQuery } from '@tanstack/react-query'
 import { Input } from '@/components/ui/input'
+import { BackButton } from '@/components/ui/back-button'
 import { Stepper } from '@/components/ui/stepper'
 import { StarIcon } from '@/components/star-icon'
 import { useAuth } from '@/stores/auth'
 import { clienteService } from '@/services/cliente-service'
 import { protocoloService } from '@/services/protocolo-service'
+import { Vo2MaxWizard } from './vo2max-wizard'
 import type { Cliente } from '@/types/cliente'
 import type { ProtocoloResumo, HubResponse } from '@/types/protocolo'
-
-const CATEGORY_ICON: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
-  VO2_MAX: Heart,
-  IMC: Weight,
-  BIOIMPEDANCIA: Zap,
-  FORCA: Dumbbell,
-  FLEXIBILIDADE: Fence,
-}
 
 const CATEGORY_LABEL: Record<string, string> = {
   VO2_MAX: 'Cardiorrespiratório',
@@ -35,6 +30,8 @@ const CATEGORY_SEGMENTS = [
   { key: 'FORCA', label: 'Força' },
   { key: 'FLEXIBILIDADE', label: 'Flex.' },
 ]
+
+const PROTOCOLO_RECOMENDADO_ID = 'protocolo_vo2max_esteira_incremental'
 
 const ICON_BG = ['bg-secondary', 'bg-accent', 'bg-link'] as const
 
@@ -57,12 +54,15 @@ function calcAge(birthDate?: string | null): number | null {
 
 export function NovaAvaliacaoPage() {
   const navigate = useNavigate()
+  const location = useLocation()
   const { user } = useAuth()
+  const preselectedClienteId = (location.state as { clienteId?: string } | null)?.clienteId
   const [selectedCliente, setSelectedCliente] = useState<Cliente | null>(null)
   const [clienteBusca, setClienteBusca] = useState('')
   const [selectedProtocoloId, setSelectedProtocoloId] = useState<string | null>(null)
   const [avaliacaoBusca, setAvaliacaoBusca] = useState('')
   const [activeSegment, setActiveSegment] = useState('todos')
+  const [avaliacaoIniciada, setAvaliacaoIniciada] = useState(false)
 
   const { data: clientesData, isLoading: loadingClientes } = useQuery<Cliente[]>({
     queryKey: ['clientes'],
@@ -82,6 +82,13 @@ export function NovaAvaliacaoPage() {
   })
 
   const clientesList: Cliente[] = clientesData ?? []
+
+  useEffect(() => {
+    if (preselectedClienteId && clientesData) {
+      const match = clientesData.find((c) => c.id === preselectedClienteId)
+      if (match) setSelectedCliente(match)
+    }
+  }, [preselectedClienteId, clientesData])
   const allProtocolos: ProtocoloResumo[] = Array.isArray(protocolosResponse)
     ? protocolosResponse
     : protocolosResponse
@@ -102,14 +109,18 @@ export function NovaAvaliacaoPage() {
     return [...favs, ...rest.sort((a, b) => (b.padrao ? 1 : 0) - (a.padrao ? 1 : 0))]
   }, [allProtocolos, favoritoIds])
 
-  const selectedProtocolo = useMemo(
-    () => allProtocolosSorted.find((p) => p.id === selectedProtocoloId) ?? allProtocolosSorted.find((p) => p.padrao) ?? allProtocolosSorted[0] ?? null,
-    [allProtocolosSorted, selectedProtocoloId],
+  const recommendedProtocolo = useMemo(
+    () =>
+      allProtocolosSorted.find((p) => p.id === PROTOCOLO_RECOMENDADO_ID) ??
+      allProtocolosSorted.find((p) => p.padrao) ??
+      allProtocolosSorted[0] ??
+      null,
+    [allProtocolosSorted],
   )
 
-  const recommendedProtocolo = useMemo(
-    () => allProtocolosSorted.find((p) => p.padrao) ?? allProtocolosSorted[0] ?? null,
-    [allProtocolosSorted],
+  const selectedProtocolo = useMemo(
+    () => allProtocolosSorted.find((p) => p.id === selectedProtocoloId) ?? recommendedProtocolo ?? allProtocolosSorted[0] ?? null,
+    [allProtocolosSorted, selectedProtocoloId, recommendedProtocolo],
   )
 
   const filteredProtocolos = useMemo(() => {
@@ -134,22 +145,21 @@ export function NovaAvaliacaoPage() {
     return list
   }, [allProtocolosSorted, recommendedProtocolo, activeSegment, avaliacaoBusca, favoritoIds])
 
-  const handleProtocoloConfirm = () => {
-    if (!selectedCliente || !selectedProtocolo) return
-    if (selectedProtocolo.id === 'protocolo_vo2max_esteira_incremental') {
-      navigate('/avaliacao/vo2max-esteira', {
-        state: {
-          clienteId: selectedCliente.id,
-          clienteNome: selectedCliente.fullName,
-          protocoloId: selectedProtocolo.id,
-        },
-      })
+  const handleProtocoloConfirm = (protocolo = selectedProtocolo) => {
+    if (!selectedCliente || !protocolo) return
+    if (protocolo.id === 'protocolo_vo2max_esteira_incremental') {
+      setAvaliacaoIniciada(true)
       return
     }
     navigate('/avaliacoes')
   }
 
   const goBack = () => {
+    if (avaliacaoIniciada) {
+      setAvaliacaoIniciada(false)
+      setSelectedProtocoloId(null)
+      return
+    }
     if (selectedCliente) {
       setSelectedCliente(null)
       setSelectedProtocoloId(null)
@@ -164,16 +174,10 @@ export function NovaAvaliacaoPage() {
     <div className="flex min-h-dvh flex-col bg-background">
       <div className="bg-primary px-6 pt-12 pb-24">
         <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={goBack}
-            className="bg-primary-foreground/15 text-primary-foreground flex size-10 items-center justify-center rounded-full"
-          >
-            <ArrowLeft size={18} />
-          </button>
+          <BackButton onClick={goBack} />
           <div>
             <h1 className="text-primary-foreground text-lg font-bold">
-              {selectedCliente ? 'Selecione a avaliação' : 'Nova Avaliação'}
+              {avaliacaoIniciada ? 'Iniciar avaliação' : selectedCliente ? 'Selecione a avaliação' : 'Nova Avaliação'}
             </h1>
             <p className="text-primary-foreground/70 text-xs">
               {selectedCliente ? selectedCliente.fullName : 'Selecione o aluno'}
@@ -182,7 +186,7 @@ export function NovaAvaliacaoPage() {
         </div>
       </div>
 
-      <div className="bg-background -mt-16 flex flex-1 flex-col rounded-t-[56px] pt-6 pb-8">
+      <div className={`bg-background -mt-16 flex flex-1 flex-col rounded-t-[56px] pt-6 ${selectedCliente && selectedProtocolo ? 'pb-44 md:pb-28' : 'pb-8'}`}>
         {!selectedCliente ? (
           <div className="flex flex-1 flex-col gap-4 px-6">
             <div className="relative">
@@ -228,6 +232,28 @@ export function NovaAvaliacaoPage() {
               </div>
             )}
           </div>
+        ) : avaliacaoIniciada ? (
+          <div className="flex flex-1 flex-col">
+            <Stepper steps={STEPS} currentStep={2} className="px-6 mb-5" />
+
+            <Vo2MaxWizard
+              clienteId={selectedCliente.id}
+              clienteNome={selectedCliente.fullName}
+              protocoloId={selectedProtocolo?.id ?? ''}
+              onExit={() => {
+                setAvaliacaoIniciada(false)
+                setSelectedProtocoloId(null)
+              }}
+              onDone={() => {
+                if (window.confirm('Deseja realizar outra avaliação para este aluno?')) {
+                  setAvaliacaoIniciada(false)
+                  setSelectedProtocoloId(null)
+                } else {
+                  navigate('/avaliacoes')
+                }
+              }}
+            />
+          </div>
         ) : (
           <div className="flex flex-1 flex-col">
             <Stepper steps={STEPS} currentStep={1} className="px-6 mb-5" />
@@ -240,10 +266,9 @@ export function NovaAvaliacaoPage() {
                   protocolo={recommendedProtocolo}
                   isFavorite={favoritoIds.has(recommendedProtocolo.id)}
                   onSelect={() => setSelectedProtocoloId(recommendedProtocolo.id)}
+                  onStart={handleProtocoloConfirm}
                 />
               )}
-
-              <HistoryBanner protocolo={recommendedProtocolo} />
 
               <div className="relative">
                 <Search size={16} className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2" />
@@ -281,7 +306,7 @@ export function NovaAvaliacaoPage() {
         )}
       </div>
 
-      {selectedCliente && selectedProtocolo && (
+      {selectedCliente && selectedProtocolo && !avaliacaoIniciada && (
         <StickyBottomAction
           protocolo={selectedProtocolo}
           onStart={handleProtocoloConfirm}
@@ -296,8 +321,8 @@ function ProfileSummaryCard({ cliente }: { cliente: Cliente }) {
 
   return (
     <div className="bg-card flex items-center gap-4 rounded-2xl p-4 shadow-sm">
-      <div className="bg-primary flex size-14 shrink-0 items-center justify-center rounded-full shadow-md shadow-primary/20">
-        <User size={22} className="text-primary-foreground" />
+      <div className="bg-secondary flex size-14 shrink-0 items-center justify-center rounded-full">
+        <User size={22} className="text-background" />
       </div>
       <div className="min-w-0 flex-1">
         <p className="text-foreground truncate text-sm font-bold capitalize">{cliente.fullName}</p>
@@ -318,10 +343,12 @@ function FeaturedCard({
   protocolo,
   isFavorite,
   onSelect,
+  onStart,
 }: {
   protocolo: ProtocoloResumo
   isFavorite: boolean
   onSelect: () => void
+  onStart: () => void
 }) {
   const Icon = CATEGORY_ICON[protocolo.categoria] ?? Activity
 
@@ -329,20 +356,16 @@ function FeaturedCard({
     <button
       type="button"
       onClick={onSelect}
-      className="bg-card ring-primary/20 flex flex-col items-center gap-4 rounded-3xl p-5 text-center shadow-lg ring-1 active:scale-[0.98] transition-all"
+      className="bg-card ring-border/60 flex flex-col items-center gap-4 rounded-3xl p-5 text-center shadow-sm ring-1 active:scale-[0.98] transition-transform"
     >
       <div className="flex items-center gap-2 self-start">
-        <span className="bg-primary/10 text-primary rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider">
+        <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-link">
           Recomendado
         </span>
         {isFavorite && <StarIcon filled className="size-3.5 text-link" />}
       </div>
 
-      <div className="bg-primary/10 flex size-16 items-center justify-center rounded-full">
-        <div className="bg-primary flex size-12 items-center justify-center rounded-full shadow-lg shadow-primary/30">
-          <Icon size={24} className="text-primary-foreground" />
-        </div>
-      </div>
+      <Icon size={32} className="text-link" />
 
       <div>
         <p className="text-foreground text-base font-bold capitalize">{protocolo.nome}</p>
@@ -351,28 +374,16 @@ function FeaturedCard({
         )}
       </div>
 
-      <div className="bg-primary text-primary-foreground w-full rounded-2xl py-3 text-sm font-bold shadow-md shadow-primary/20">
+      <div
+        onClick={(e) => {
+          e.stopPropagation()
+          onStart()
+        }}
+        className="bg-primary w-full rounded-2xl py-3 text-sm font-bold text-primary-foreground"
+      >
         Iniciar avaliação
       </div>
     </button>
-  )
-}
-
-function HistoryBanner({ protocolo }: { protocolo: ProtocoloResumo | null }) {
-  if (!protocolo) return null
-
-  return (
-    <div className="bg-muted/50 flex items-center gap-3 rounded-2xl px-4 py-3">
-      <div className="bg-background flex size-8 shrink-0 items-center justify-center rounded-full">
-        <Activity size={14} className="text-muted-foreground" />
-      </div>
-      <div className="min-w-0 flex-1">
-        <p className="text-muted-foreground text-[11px]">Última avaliação</p>
-        <p className="text-foreground truncate text-xs font-medium">
-          {protocolo.nome} — há 90 dias
-        </p>
-      </div>
-    </div>
   )
 }
 
@@ -422,34 +433,30 @@ function SelectableCard({
     <button
       type="button"
       onClick={onClick}
-      className={`relative flex flex-col items-center gap-2.5 rounded-2xl p-3 text-center transition-all active:scale-[0.95] ${
+      className={`relative flex flex-col items-center gap-2.5 rounded-2xl border p-3 text-center transition-colors active:scale-[0.95] ${
         isSelected
-          ? 'bg-primary text-primary-foreground shadow-md shadow-primary/20'
-          : 'bg-card text-foreground shadow-sm'
+          ? 'border-primary bg-card text-foreground'
+          : 'border-border/70 bg-card text-muted-foreground'
       }`}
     >
       {isFavorite && (
         <StarIcon filled className="text-link absolute top-2 right-2 size-3" />
       )}
 
-      <div className={`flex size-10 items-center justify-center rounded-full ${
-        isSelected ? 'bg-primary-foreground/20' : 'bg-muted'
-      }`}>
-        <Icon size={18} className={isSelected ? 'text-primary-foreground' : 'text-muted-foreground'} />
-      </div>
+      <Icon size={18} className={isSelected ? 'text-primary' : 'text-secondary'} />
 
-      <p className={`truncate w-full text-xs font-semibold capitalize ${isSelected ? '' : 'text-muted-foreground'}`}>
+      <p className={`w-full truncate text-xs font-semibold capitalize ${isSelected ? '' : 'text-muted-foreground'}`}>
         {protocolo.nome}
       </p>
 
       {protocolo.descricao && (
-        <p className={`line-clamp-2 w-full text-[10px] leading-tight ${isSelected ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
+        <p className={`line-clamp-2 w-full text-[10px] leading-tight ${isSelected ? 'text-muted-foreground' : 'text-muted-foreground/70'}`}>
           {protocolo.descricao}
         </p>
       )}
 
       <div className="flex items-center gap-2">
-        <span className={`text-[9px] ${isSelected ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
+        <span className={`text-[9px] ${isSelected ? 'text-primary' : 'text-muted-foreground'}`}>
           {CATEGORY_LABEL[protocolo.categoria] ?? protocolo.categoria}
         </span>
       </div>
@@ -465,7 +472,7 @@ function StickyBottomAction({
   onStart: () => void
 }) {
   return (
-    <div className="bg-background border-border fixed bottom-0 inset-x-0 border-t px-6 py-4 pb-8">
+    <div className="bg-background border-border fixed inset-x-0 z-[55] border-t px-6 py-4 pb-8 bottom-[72px] md:bottom-0">
       <div className="flex items-center gap-3">
         <div className="min-w-0 flex-1">
           <p className="text-foreground truncate text-sm font-bold capitalize">{protocolo.nome}</p>
@@ -474,9 +481,9 @@ function StickyBottomAction({
         <button
           type="button"
           onClick={onStart}
-          className="bg-primary shrink-0 rounded-2xl px-6 py-3 text-sm font-bold text-primary-foreground shadow-lg shadow-primary/20 active:scale-[0.97] transition-all"
+          className="bg-primary shrink-0 rounded-2xl px-6 py-3 text-sm font-bold text-primary-foreground shadow-sm active:scale-[0.97] transition-transform"
         >
-          Iniciar
+          Iniciar avaliação
         </button>
       </div>
     </div>

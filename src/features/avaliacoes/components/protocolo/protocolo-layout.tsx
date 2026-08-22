@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { BackButton } from '@/components/ui/back-button'
 import { CategoryVisual } from '@/components/category-visual'
 import type { ProtocoloDetalhe } from '@/types/protocolo'
 import { PageLayout } from '@/components/layout/page-layout'
@@ -18,9 +17,7 @@ export function ProtocoloLayout({ protocolo, children }: Props) {
     <PageLayout
       header={
         <div className="flex items-center gap-3">
-          <Button variant="outline" size="icon" onClick={() => navigate('/avaliacoes')} className="rounded-full">
-            <ArrowLeft className="size-5" />
-          </Button>
+          <BackButton onClick={() => navigate('/avaliacoes')} />
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               <h1 className="text-primary-foreground truncate text-xl font-bold">{protocolo.nome}</h1>

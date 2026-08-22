@@ -2,6 +2,7 @@ import axios, { isAxiosError } from 'axios'
 import { toast } from 'sonner'
 import { authService } from '@/services/auth-service'
 import { tokenStorage } from '@/lib/token'
+import { dispatchSessionExpired, dispatchTokenRefreshed } from '@/lib/auth-events'
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -60,19 +61,31 @@ api.interceptors.response.use(
         try {
           const { data } = await authService.refresh(refreshToken)
           tokenStorage.set(data.token, data.refreshToken)
+          dispatchTokenRefreshed(data.token)
           originalRequest.headers.Authorization = `Bearer ${data.token}`
           return api(originalRequest)
         } catch {
           tokenStorage.clear()
-          window.location.href = '/login'
+          dispatchSessionExpired()
           return Promise.reject(error)
         }
       } else {
         tokenStorage.clear()
-        window.location.href = '/login'
+        dispatchSessionExpired()
         return Promise.reject(error)
       }
     }
+
+    // /auth/me falhou por qualquer motivo (403, rede, 500...) → sessão inválida: limpa dados e desloga
+    if (originalRequest?.url?.split('?')[0] === '/auth/me') {
+      tokenStorage.clear()
+      localStorage.removeItem('proinsight_academia_id')
+      dispatchSessionExpired()
+      return Promise.reject(error)
+    }
+
+    // Sem resposta (backend indisponível / erro de rede) → silencioso, sem toast
+    if (!error.response) return Promise.reject(error)
 
     // 429 — Lockout / Rate limit
     if (status === 429) {

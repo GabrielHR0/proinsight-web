@@ -9,13 +9,16 @@ import { Label } from '@/components/ui/label'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { clienteService } from '@/services/cliente-service'
-import type { ClienteFormData, ComImcResponse } from '@/types/cliente'
+import { useAuth } from '@/stores/auth'
+import type { ClienteFormData, ComImcResponse, Sexo } from '@/types/cliente'
 import { cn } from '@/lib/utils'
 
 interface FormData extends ClienteFormData {
   peso: string
   altura: string
+  sexo: Sexo | undefined
 }
 
 const INITIAL_FORM: FormData = {
@@ -24,6 +27,7 @@ const INITIAL_FORM: FormData = {
   phone: '',
   cpf: '',
   dataNascimento: '',
+  sexo: undefined,
   rua: '',
   numero: '',
   cidade: '',
@@ -49,6 +53,7 @@ interface CadastroClienteFormProps {
 }
 
 export function CadastroClienteForm({ onSuccess, onCancel }: CadastroClienteFormProps) {
+  const { user } = useAuth()
   const [form, setForm] = useState<FormData>(INITIAL_FORM)
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
@@ -61,6 +66,7 @@ export function CadastroClienteForm({ onSuccess, onCancel }: CadastroClienteForm
   }
 
   const hasPesoAltura = form.peso !== '' && form.altura !== ''
+  const canSubmit = !!form.sexo
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -75,6 +81,8 @@ export function CadastroClienteForm({ onSuccess, onCancel }: CadastroClienteForm
           phone: form.phone,
           cpf: form.cpf,
           dataNascimento: form.dataNascimento,
+          sexo: form.sexo,
+          avaliadorId: user?.id,
           rua: form.rua || undefined,
           numero: form.numero || undefined,
           cidade: form.cidade || undefined,
@@ -85,7 +93,19 @@ export function CadastroClienteForm({ onSuccess, onCancel }: CadastroClienteForm
         })
         setImcResult(response)
       } else {
-        await clienteService.criar(form)
+        await clienteService.criar({
+          fullName: form.fullName,
+          email: form.email,
+          phone: form.phone,
+          cpf: form.cpf,
+          dataNascimento: form.dataNascimento,
+          sexo: form.sexo!,
+          rua: form.rua,
+          numero: form.numero,
+          cidade: form.cidade,
+          estado: form.estado,
+          cep: form.cep,
+        })
       }
       setSuccess(true)
       setTimeout(() => onSuccess?.(), 2500)
@@ -154,6 +174,21 @@ export function CadastroClienteForm({ onSuccess, onCancel }: CadastroClienteForm
             onChange={(e) => updateField('cpf', e.target.value)}
             required
           />
+          <div className="flex flex-col gap-1.5">
+            <Label className="text-foreground text-xs font-medium">Sexo</Label>
+            <Select
+              value={form.sexo ?? ''}
+              onValueChange={(v) => updateField('sexo', v as Sexo)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="MASCULINO">Masculino</SelectItem>
+                <SelectItem value="FEMININO">Feminino</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
           <div className="flex flex-col gap-1.5">
             <Label className="text-foreground text-xs font-medium">Data de nascimento</Label>
             <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
@@ -297,7 +332,7 @@ export function CadastroClienteForm({ onSuccess, onCancel }: CadastroClienteForm
             Cancelar
           </Button>
         )}
-        <Button type="submit" disabled={loading} className="flex-1">
+        <Button type="submit" disabled={loading || !canSubmit} className="flex-1">
           {loading ? (
             <span className="flex items-center justify-center gap-2">
               <Loader2 size={16} className="animate-spin" />

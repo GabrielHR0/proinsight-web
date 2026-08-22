@@ -153,6 +153,13 @@ html, body {
   to { height: 0; }
 }
 
+@keyframes bg-drift {
+  0%, 100% { background-position: 0% 0%; }
+  25% { background-position: 50% 50%; }
+  50% { background-position: 100% 100%; }
+  75% { background-position: 50% 50%; }
+}
+
 /* ─────────────── Base styles ─────────────── */
 
 @layer base {

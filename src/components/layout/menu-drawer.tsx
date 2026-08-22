@@ -1,5 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useMenuDrawer } from '@/stores/menu-drawer'
+import { useAuth } from '@/stores/auth'
 import {
   Home,
   Users,
@@ -29,7 +30,7 @@ interface MenuGroup {
   items: MenuItem[]
 }
 
-const groups: MenuGroup[] = [
+const allGroups: MenuGroup[] = [
   {
     title: 'Principal',
     items: [
@@ -77,8 +78,20 @@ const groups: MenuGroup[] = [
 
 export function MenuDrawer() {
   const { open, close } = useMenuDrawer()
+  const { user } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
+
+  const hasAcademia = (user?.academiaIds?.length ?? 0) > 0
+    || (user?.academiaPermissoes && Object.keys(user.academiaPermissoes).length > 0)
+
+  const groups = allGroups.map((group) => ({
+    ...group,
+    items: group.items.filter((item) => {
+      if (item.to === '/minha-academia' && !hasAcademia) return false
+      return true
+    }),
+  })).filter((group) => group.items.length > 0)
 
   function go(to: string) {
     close()

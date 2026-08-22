@@ -83,7 +83,33 @@ export function MinhaAcademiaPage() {
   }
 
   if (loadError || !academia) {
-    return <Navigate to="/onboarding" replace />
+    return (
+      <PageLayout header={<div className="flex items-center gap-3"><BackButton onClick={() => navigate(-1)} /><h1 className="text-primary-foreground text-xl font-bold">Minha Academia</h1></div>}>
+        <div className="flex flex-col items-center justify-center gap-4 py-16 text-center">
+          <div className="bg-muted flex size-14 items-center justify-center rounded-2xl">
+            <Building2 size={24} className="text-muted-foreground" />
+          </div>
+          <div>
+            <p className="text-foreground text-sm font-semibold">Nenhuma academia vinculada</p>
+            <p className="text-muted-foreground mt-1 text-xs">Você ainda não possui uma academia associada à sua conta.</p>
+          </div>
+          <div className="flex gap-3">
+            <button
+              onClick={() => navigate('/onboarding')}
+              className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl px-4 py-2.5 text-sm font-semibold shadow-sm transition-all"
+            >
+              Criar academia
+            </button>
+            <button
+              onClick={() => navigate(-1)}
+              className="rounded-xl border border-border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-muted/50"
+            >
+              Voltar
+            </button>
+          </div>
+        </div>
+      </PageLayout>
+    )
   }
 
   return (

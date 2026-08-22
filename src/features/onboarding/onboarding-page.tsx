@@ -172,7 +172,14 @@ export function OnboardingPage() {
           </div>
         </div>
 
-        <div className="text-center">
+        <div className="flex flex-col items-center gap-3">
+          <button
+            type="button"
+            onClick={() => navigate('/', { replace: true })}
+            className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+          >
+            Continuar sem academia
+          </button>
           <button
             type="button"
             onClick={logout}

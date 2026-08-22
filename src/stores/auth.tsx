@@ -66,16 +66,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   function setActiveAcademia(user: User | null) {
     const current = localStorage.getItem('proinsight_academia_id')
+
+    // 1. Se já tem um valor válido, mantém
     if (current && user?.academiaIds?.includes(current)) return
+
+    // 2. Tenta usar a primeira academiaId do user
     const first = user?.academiaIds?.[0]
     if (first) {
       localStorage.setItem('proinsight_academia_id', first)
-    } else if (user?.id) {
-      // Personal autônomo: userId vira o tenant pessoal
-      localStorage.setItem('proinsight_academia_id', user.id)
-    } else {
-      localStorage.removeItem('proinsight_academia_id')
+      return
     }
+
+    // 3. Fallback: usa a primeira chave de academiaPermissoes (defesa em profundidade)
+    const permKeys = user?.academiaPermissoes ? Object.keys(user.academiaPermissoes) : []
+    if (permKeys.length > 0) {
+      localStorage.setItem('proinsight_academia_id', permKeys[0])
+      return
+    }
+
+    // 4. Personal autônomo: sem academia — não seta tenant
+    localStorage.removeItem('proinsight_academia_id')
   }
 
   // Token expirado no boot → tenta refresh silencioso

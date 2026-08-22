@@ -1,0 +1,7 @@
+export { EvolucaoChart } from './components/evolucao-chart'
+export { DetalheMetrica } from './components/detalhe-metrica'
+export { ResumoEvolucao } from './components/comparacao-avaliacoes'
+export { HistoricoCards } from './components/historico-cards'
+export { formatarData, corClassificacao } from './components/classificacao-utils'
+export { calcularIdade } from './components/laudo-utils'
+export type { Metrica } from './components/laudo-utils'

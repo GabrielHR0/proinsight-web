@@ -121,7 +121,7 @@ export function ComboboxMobile<T>({
               {!hasSearch && hasSort && (
                 <button
                   onClick={() => setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))}
-                  className="bg-surface flex size-10 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-surface/80"
+                  className="bg-muted flex size-10 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-muted/80"
                   type="button"
                 >
                   {sortDir === 'asc' ? <ChevronUp size={18} className="text-foreground" /> : <ChevronDown size={18} className="text-foreground" />}
@@ -143,7 +143,7 @@ export function ComboboxMobile<T>({
               {hasSort && (
                 <button
                   onClick={() => setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))}
-                  className="bg-surface flex size-10 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-surface/80"
+                  className="bg-muted flex size-10 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-muted/80"
                   type="button"
                 >
                   {sortDir === 'asc' ? <ChevronUp size={18} className="text-foreground" /> : <ChevronDown size={18} className="text-foreground" />}

@@ -27,17 +27,17 @@ interface ConfirmModalProps {
 const variantConfig: Record<Variant, { icon: typeof AlertTriangle; iconClass: string; buttonClass: string }> = {
   danger: {
     icon: Trash2,
-    iconClass: 'text-destructive bg-destructive/10',
+    iconClass: 'text-destructive',
     buttonClass: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
   },
   warning: {
     icon: AlertTriangle,
-    iconClass: 'text-yellow-600 bg-yellow-100 dark:text-yellow-400 dark:bg-yellow-900/30',
+    iconClass: 'text-yellow-600 dark:text-yellow-400',
     buttonClass: 'bg-accent text-accent-foreground hover:bg-accent/90',
   },
   info: {
     icon: Info,
-    iconClass: 'text-link bg-link/10',
+    iconClass: 'text-link',
     buttonClass: 'bg-primary text-primary-foreground hover:bg-primary/90',
   },
 }
@@ -59,9 +59,7 @@ export function ConfirmModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <div className={cn('mb-3 flex size-12 items-center justify-center rounded-2xl', iconClass)}>
-            <Icon size={22} />
-          </div>
+          <Icon size={24} className={cn('mb-1', iconClass)} />
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>

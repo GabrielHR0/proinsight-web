@@ -13,7 +13,7 @@ export function PageLayout({ header, children, compact = false }: PageLayoutProp
         {header}
       </div>
 
-      <div className="bg-background -mt-16 flex flex-1 flex-col rounded-t-[56px] px-6 pt-8 pb-8">
+      <div className="bg-background -mt-16 flex flex-1 flex-col overflow-x-hidden rounded-t-[56px] px-6 pt-8 pb-8">
         {children}
         <div className="h-32 shrink-0 md:hidden" />
       </div>

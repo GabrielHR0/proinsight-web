@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { Check, ChevronLeft, ChevronRight, Loader2, Heart, Timer, TrendingUp, Dumbbell, Clock, Zap } from 'lucide-react'
+import { Check, ChevronLeft, ChevronRight, Heart, Loader2, Timer } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { Stepper } from '@/components/ui/stepper'
 import { Button } from '@/components/ui/button'
@@ -44,9 +44,10 @@ interface Vo2MaxWizardProps {
   protocoloId: string
   onExit: () => void
   onDone: () => void
+  onNewEvaluation: () => void
 }
 
-export function Vo2MaxWizard({ clienteId, clienteNome, protocoloId, onDone }: Vo2MaxWizardProps) {
+export function Vo2MaxWizard({ clienteId, clienteNome, protocoloId, onDone, onNewEvaluation }: Vo2MaxWizardProps) {
   const { user } = useAuth()
   const [step, setStep] = useState(0)
 
@@ -527,70 +528,88 @@ export function Vo2MaxWizard({ clienteId, clienteNome, protocoloId, onDone }: Vo
               </div>
             ) : serverResult ? (
               <>
-                <div className="flex flex-col items-center text-center">
-                  <div className="bg-accent/10 text-accent mb-4 flex size-16 items-center justify-center rounded-2xl">
-                    <Check size={32} />
+                <div className="animate-in fade-in slide-in-from-bottom-4 fill-mode-both flex flex-col items-center rounded-2xl bg-gradient-to-b from-primary/10 to-background px-6 pt-8 pb-6 [animation-delay:150ms] [animation-duration:500ms]">
+                  <div className="relative flex items-center justify-center">
+                    <svg width="160" height="160" viewBox="0 0 160 160" className="-rotate-90">
+                      <circle cx="80" cy="80" r="70" fill="none" stroke="currentColor" strokeWidth="6" className="text-border/40" />
+                      <circle
+                        cx="80" cy="80" r="70" fill="none" stroke="currentColor" strokeWidth="6"
+                        strokeLinecap="round"
+                        strokeDasharray={`${2 * Math.PI * 70}`}
+                        strokeDashoffset={`${2 * Math.PI * 70 * (1 - Math.min((serverResult.classificacao.valor_vo2max || 0) / 60, 1))}`}
+                        className="text-primary transition-all duration-1000"
+                      />
+                    </svg>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <span className="text-foreground text-5xl font-black tracking-tight tabular-nums leading-none">
+                        {typeof serverResult.classificacao.valor_vo2max === 'number'
+                          ? serverResult.classificacao.valor_vo2max.toFixed(1)
+                          : serverResult.classificacao.valor_vo2max}
+                      </span>
+                      <span className="text-muted-foreground mt-1.5 text-[10px] font-semibold uppercase tracking-[0.14em]">
+                        VO₂max
+                      </span>
+                    </div>
                   </div>
-                  <p className="text-foreground text-base font-semibold">Avaliação Concluída</p>
-                  <p className="text-muted-foreground mt-1 text-sm">{clienteNome}</p>
+                  <p className="text-muted-foreground mt-2 text-xs">mL/kg/min</p>
+                  <Badge variant="secondary" className="mt-3 rounded-full px-3 py-0.5 text-xs font-semibold">
+                    {serverResult.classificacao.nome_legivel || serverResult.classificacao.nome}
+                  </Badge>
                 </div>
 
-                <Card className="flex flex-col items-center gap-1 p-4 text-center">
-                  <TrendingUp size={18} className="text-accent" />
-                  <span className="text-foreground text-2xl font-black tabular-nums">
-                    {serverResult.classificacao.valor_vo2max}
-                  </span>
-                  <span className="text-muted-foreground text-xs">VO₂max (mL/kg/min)</span>
-                </Card>
-
-                <Card className="p-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground text-sm">Classificação</span>
-                    <Badge className="bg-accent text-accent-foreground text-sm">
-                      {serverResult.classificacao.nome}
-                    </Badge>
+                <div className="animate-in fade-in fill-mode-both border-y border-border/60 [animation-delay:350ms] [animation-duration:400ms]">
+                  <div className="grid grid-cols-4 divide-x divide-border/60">
+                    <div className="flex flex-col items-center py-3">
+                      <span className="text-foreground text-2xl font-black tabular-nums leading-none">
+                        {serverResult.classificacao.mets_calculado ?? '—'}
+                      </span>
+                      <span className="text-muted-foreground mt-1.5 text-[10px] font-semibold uppercase tracking-wider">
+                        METs
+                      </span>
+                    </div>
+                    <div className="flex flex-col items-center py-3">
+                      <span className="text-foreground text-2xl font-black tabular-nums leading-none">{stage}</span>
+                      <span className="text-muted-foreground mt-1.5 text-[10px] font-semibold uppercase tracking-wider">
+                        estágios
+                      </span>
+                    </div>
+                    <div className="flex flex-col items-center py-3">
+                      <span className="text-foreground text-2xl font-black tabular-nums leading-none">
+                        {formatTime(elapsed)}
+                      </span>
+                      <span className="text-muted-foreground mt-1.5 text-[10px] font-semibold uppercase tracking-wider">
+                        duração
+                      </span>
+                    </div>
+                    <div className="flex flex-col items-center py-3">
+                      <span className="text-foreground text-2xl font-black tabular-nums leading-none">
+                        {speed.toFixed(1)}
+                      </span>
+                      <span className="text-muted-foreground mt-1.5 text-[10px] font-semibold uppercase tracking-wider">
+                        km/h
+                      </span>
+                    </div>
                   </div>
-                  {serverResult.classificacao.descricao && (
-                    <p className="text-muted-foreground mt-2 text-xs">{serverResult.classificacao.descricao}</p>
-                  )}
-                </Card>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <Card className="flex flex-col items-center gap-1 p-3 text-center">
-                    <Dumbbell size={16} className="text-accent" />
-                    <span className="text-foreground text-lg font-black tabular-nums">{stage}</span>
-                    <span className="text-muted-foreground text-xs">estágios</span>
-                  </Card>
-                  <Card className="flex flex-col items-center gap-1 p-3 text-center">
-                    <Clock size={16} className="text-accent" />
-                    <span className="text-foreground text-lg font-black tabular-nums">{formatTime(elapsed)}</span>
-                    <span className="text-muted-foreground text-xs">duração</span>
-                  </Card>
-                  <Card className="flex flex-col items-center gap-1 p-3 text-center">
-                    <Zap size={16} className="text-accent" />
-                    <span className="text-foreground text-lg font-black tabular-nums">{speed.toFixed(1)}</span>
-                    <span className="text-muted-foreground text-xs">km/h final</span>
-                  </Card>
-                  <Card className="flex flex-col items-center gap-1 p-3 text-center">
-                    <Heart size={16} className="text-red-400" />
-                    <span className="text-foreground text-lg font-black tabular-nums">
-                      {hrReadings.length > 0 ? hrReadings[hrReadings.length - 1].bpm : '—'}
-                    </span>
-                    <span className="text-muted-foreground text-xs">FC final</span>
-                  </Card>
                 </div>
 
                 {hrReadings.length > 0 && (
-                  <Card className="p-4">
-                    <h3 className="mb-2 text-sm font-semibold">FC Registradas</h3>
-                    <div className="flex flex-wrap gap-1.5">
+                  <div className="animate-in fade-in fill-mode-both flex flex-col gap-2.5 [animation-delay:550ms] [animation-duration:400ms]">
+                    <h3 className="text-sm font-semibold">FC Registradas</h3>
+                    <div className="flex items-center gap-0">
                       {hrReadings.map((r, i) => (
-                        <Badge key={i} variant="secondary" className="text-xs tabular-nums">
-                          {formatTime(r.time)} — {r.bpm} bpm
-                        </Badge>
+                        <div key={i} className="flex flex-1 items-center">
+                          <div className="flex flex-col items-center">
+                            <div className="bg-primary size-2 rounded-full" />
+                            <span className="text-muted-foreground mt-1.5 text-[10px] tabular-nums">{r.bpm}</span>
+                            <span className="text-muted-foreground text-[9px] tabular-nums">{formatTime(r.time)}</span>
+                          </div>
+                          {i < hrReadings.length - 1 && (
+                            <div className="bg-border/60 mx-0.5 h-px flex-1" />
+                          )}
+                        </div>
                       ))}
                     </div>
-                  </Card>
+                  </div>
                 )}
               </>
             ) : (
@@ -612,7 +631,7 @@ export function Vo2MaxWizard({ clienteId, clienteNome, protocoloId, onDone }: Vo
       {/* ═══════════ BOTTOM NAV ═══════════ */}
       <div className="border-border bg-background/80 fixed inset-x-0 z-[55] border-t px-6 py-4 pb-8 backdrop-blur-lg bottom-[72px] md:bottom-0 md:pb-6">
         <div className="flex gap-3">
-          {!isFirst && !submitting && (testPhase !== 'running' || step === 2) && (
+          {!isFirst && !submitting && (testPhase !== 'running' || step === 2) && !(step === 2 && serverResult) && (
             <Button variant="outline" className="flex-1 rounded-full" onClick={handleBack}>
               <ChevronLeft size={16} className="mr-1" />
               Voltar
@@ -646,10 +665,14 @@ export function Vo2MaxWizard({ clienteId, clienteNome, protocoloId, onDone }: Vo
 
           {step === 2 && !submitting && (
             serverResult ? (
-              <Button className="flex-1 rounded-full" onClick={onDone}>
-                Concluir
-                <Check size={16} className="ml-1" />
-              </Button>
+              <>
+                <Button variant="outline" className="flex-1 rounded-full" onClick={onNewEvaluation}>
+                  Nova avaliação
+                </Button>
+                <Button className="flex-1 rounded-full" onClick={onDone}>
+                  Concluir
+                </Button>
+              </>
             ) : (
               <Button
                 className="flex-1 rounded-full"

@@ -45,7 +45,7 @@ function ClienteHeader({ cliente, avaliacoes }: { cliente: Cliente; avaliacoes: 
   const ultima = desc[0]
   const idade = calcularIdade(cliente.dataNascimento)
   const sexo = rotuloSexo(cliente.sexo)
-  const identificacao = [sexo, idade != null ? `${idade} anos` : null].filter(Boolean).join(' \u00B7 ')
+  const identificacao = [sexo, idade != null ? `${idade} anos` : null].filter(Boolean).join(' · ')
   const acompanhamento = tempoAcompanhamento(avaliacoes)
 
   return (
@@ -68,7 +68,7 @@ function ClienteHeader({ cliente, avaliacoes }: { cliente: Cliente; avaliacoes: 
       <div className="mt-5 grid grid-cols-3 gap-4">
         <div className="flex flex-col gap-0.5">
           <p className="text-muted-foreground text-[11px] font-semibold uppercase leading-relaxed tracking-[0.12em]">
-            {'\u00DA'}ltima avalia{'\u00E7'}{'\u00E3'}o
+            Última avaliação
           </p>
           <p className="text-foreground text-base font-black tracking-tight">
             {formatarData(ultima?.data_avaliacao)}
@@ -76,7 +76,7 @@ function ClienteHeader({ cliente, avaliacoes }: { cliente: Cliente; avaliacoes: 
         </div>
         <div className="flex flex-col gap-0.5">
           <p className="text-muted-foreground text-[11px] font-semibold uppercase leading-relaxed tracking-[0.12em]">
-            Avalia{'\u00E7'}{'\u00F5'}es
+            Avaliações
           </p>
           <p className="text-foreground text-base font-black tracking-tight">{avaliacoes.length}</p>
         </div>
@@ -182,7 +182,7 @@ export function ClienteDetailPage() {
   if (!cliente) {
     return (
       <PageLayout header={<div className="flex items-center gap-3"><BackButton onClick={() => navigate('/clientes')} /><h1 className="text-primary-foreground text-xl font-bold">Detalhes do aluno</h1></div>}>
-        <p className="text-muted-foreground py-12 text-center text-sm">Aluno n{'\u00E3'}o encontrado</p>
+        <p className="text-muted-foreground py-12 text-center text-sm">Aluno não encontrado</p>
       </PageLayout>
     )
   }
@@ -315,7 +315,7 @@ export function ClienteDetailPage() {
                 </div>
 
                 <div className="flex flex-col gap-3">
-                  <p className="text-muted-foreground text-xs font-medium uppercase tracking-wide">Endere{'\u00E7'}o</p>
+                  <p className="text-muted-foreground text-xs font-medium uppercase tracking-wide">Endereço</p>
                   <div className="grid grid-cols-3 gap-3">
                     <div className="col-span-2">
                       <FormField
@@ -325,7 +325,7 @@ export function ClienteDetailPage() {
                       />
                     </div>
                     <FormField
-                      label="N\u00FAmero"
+                      label="Número"
                       value={form.numero}
                       onChange={(e) => setForm((p) => ({ ...p, numero: e.target.value }))}
                     />
@@ -384,9 +384,9 @@ export function ClienteDetailPage() {
               <button type="button" className="flex w-full items-center justify-between px-5 py-4 text-left">
                 <div>
                   <p className="text-muted-foreground text-[11px] font-semibold uppercase tracking-[0.14em]">Laudo</p>
-                  <p className="text-foreground mt-0.5 text-base font-bold">Avalia{'\u00E7'}{'\u00F5'}es do aluno</p>
+                  <p className="text-foreground mt-0.5 text-base font-bold">Avaliações do aluno</p>
                   <p className="text-muted-foreground mt-0.5 text-xs">
-                    Gr{'\u00E1'}ficos, evolu{'\u00E7'}{'\u00E3'}o e resultados por protocolo
+                    Gráficos, evolução e resultados por protocolo
                   </p>
                 </div>
                 <ChevronDown size={16} className={cn('text-muted-foreground transition-transform duration-200', laudoOpen && 'rotate-180')} />
@@ -400,12 +400,12 @@ export function ClienteDetailPage() {
                   </div>
                 ) : !temAvaliacoes ? (
                   <EmptyState
-                    title="Nenhuma avalia\u00E7\u00E3o registrada"
-                    description="As avalia\u00E7\u00F5es do aluno aparecer\u00E3o aqui em um relat\u00F3rio completo de evolu\u00E7\u00E3o."
+                    title="Nenhuma avaliação registrada"
+                    description="As avaliações do aluno aparecerão aqui em um relatório completo de evolução."
                     action={
                       <Button onClick={() => navigate('/avaliacao/nova', { state: { clienteId: id } })}>
                         <ClipboardPlus size={16} />
-                        Fazer primeira avalia{'\u00E7'}{'\u00E3'}o
+                        Fazer primeira avaliação
                       </Button>
                     }
                   />

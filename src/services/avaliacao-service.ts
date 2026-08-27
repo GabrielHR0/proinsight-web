@@ -25,8 +25,10 @@ export interface AvaliacaoVo2MaxRequest {
 
 export interface ClassificacaoVo2Max {
   nome: string
+  nome_legivel: string
   descricao: string
   valor_vo2max: number
+  mets_calculado: number
 }
 
 export interface AvaliacaoVo2MaxResponse {

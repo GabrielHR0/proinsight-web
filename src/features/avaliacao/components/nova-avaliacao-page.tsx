@@ -244,14 +244,11 @@ export function NovaAvaliacaoPage() {
                 setAvaliacaoIniciada(false)
                 setSelectedProtocoloId(null)
               }}
-              onDone={() => {
-                if (window.confirm('Deseja realizar outra avaliação para este aluno?')) {
-                  setAvaliacaoIniciada(false)
-                  setSelectedProtocoloId(null)
-                } else {
-                  navigate('/avaliacoes')
-                }
+              onNewEvaluation={() => {
+                setAvaliacaoIniciada(false)
+                setSelectedProtocoloId(null)
               }}
+              onDone={() => navigate('/avaliacoes')}
             />
           </div>
         ) : (

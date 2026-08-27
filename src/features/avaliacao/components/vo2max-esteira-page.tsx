@@ -36,6 +36,7 @@ export function Vo2MaxEsteiraPage() {
         clienteNome={state.clienteNome}
         protocoloId={state.protocoloId}
         onExit={() => navigate('/avaliacao/nova')}
+        onNewEvaluation={() => navigate('/avaliacao/nova')}
         onDone={() => navigate('/avaliacoes')}
       />
     </PageLayout>

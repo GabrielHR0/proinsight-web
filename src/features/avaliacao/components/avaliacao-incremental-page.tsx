@@ -627,24 +627,59 @@ export function AvaliacaoIncrementalPage() {
           </div>
         }
       >
-        <div className="flex flex-col items-center justify-center py-12 text-center">
-          <div className="mb-4 flex size-16 items-center justify-center rounded-2xl bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400">
-            <CheckCircle2 size={32} />
-          </div>
-          <p className="text-foreground text-lg font-bold">Teste finalizado com sucesso!</p>
+        <div className="flex flex-col gap-5 py-4">
           {result && (
-            <div className="mt-6 w-full max-w-sm space-y-3">
-              <Card className="flex items-center justify-between p-4">
-                <span className="text-muted-foreground text-sm">Classificação</span>
-                <Badge className="bg-accent text-accent-foreground text-sm">{result.classificacao.nome}</Badge>
-              </Card>
-              <Card className="flex items-center justify-between p-4">
-                <span className="text-muted-foreground text-sm">VO₂max</span>
-                <span className="text-foreground text-lg font-black">{result.classificacao.valor_vo2max} mL/kg/min</span>
-              </Card>
-            </div>
+            <>
+              <div className="flex flex-col items-center rounded-2xl bg-gradient-to-b from-primary/10 to-background px-6 pt-8 pb-6">
+                <div className="relative flex items-center justify-center">
+                  <svg width="160" height="160" viewBox="0 0 160 160" className="-rotate-90">
+                    <circle cx="80" cy="80" r="70" fill="none" stroke="currentColor" strokeWidth="6" className="text-border/40" />
+                    <circle
+                      cx="80" cy="80" r="70" fill="none" stroke="currentColor" strokeWidth="6"
+                      strokeLinecap="round"
+                      strokeDasharray={`${2 * Math.PI * 70}`}
+                      strokeDashoffset={`${2 * Math.PI * 70 * (1 - Math.min((result.classificacao.valor_vo2max || 0) / 60, 1))}`}
+                      className="text-primary transition-all duration-1000"
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <span className="text-foreground text-5xl font-black tracking-tight tabular-nums leading-none">
+                      {result.classificacao.valor_vo2max}
+                    </span>
+                    <span className="text-muted-foreground mt-1.5 text-[10px] font-semibold uppercase tracking-[0.14em]">
+                      VO₂max
+                    </span>
+                  </div>
+                </div>
+                <p className="text-muted-foreground mt-2 text-xs">mL/kg/min</p>
+                <Badge variant="secondary" className="mt-3 rounded-full px-3 py-0.5 text-xs font-semibold">
+                  {result.classificacao.nome_legivel || result.classificacao.nome}
+                </Badge>
+              </div>
+
+              <div className="border-y border-border/60">
+                <div className="grid grid-cols-2 divide-x divide-border/60">
+                  <div className="flex flex-col items-center py-3">
+                    <span className="text-foreground text-2xl font-black tabular-nums leading-none">
+                      {result.classificacao.mets_calculado ?? '—'}
+                    </span>
+                    <span className="text-muted-foreground mt-1.5 text-[10px] font-semibold uppercase tracking-wider">
+                      METs
+                    </span>
+                  </div>
+                  <div className="flex flex-col items-center py-3">
+                    <span className="text-foreground text-2xl font-black tabular-nums leading-none">
+                      {result.classificacao.valor_vo2max}
+                    </span>
+                    <span className="text-muted-foreground mt-1.5 text-[10px] font-semibold uppercase tracking-wider">
+                      VO₂max
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </>
           )}
-          <Button className="mt-8" onClick={() => navigate('/avaliacoes')}>
+          <Button className="rounded-full" onClick={() => navigate('/avaliacoes')}>
             Ver Avaliações
           </Button>
         </div>

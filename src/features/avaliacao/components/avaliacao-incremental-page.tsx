@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
+import { toast } from 'sonner'
 import {
   Heart,
   Play,
@@ -221,6 +222,7 @@ export function AvaliacaoIncrementalPage() {
       setResult(response)
       setPhase('done')
     } catch {
+      toast.error('Erro ao salvar avaliação. Tente novamente.')
       setPhase('result')
     }
   }

@@ -188,7 +188,7 @@ export function WeeklyPerformance() {
               </span>
               <div className="w-full flex items-end" style={{ height: '80px' }}>
                 <div
-                  className={`w-full rounded-t-lg transition-[height] duration-500 ease-out ${isActive ? 'bg-primary dark:bg-secondary' : 'bg-primary/20 dark:bg-secondary/30'}`}
+                  className={`w-full rounded-t-lg transition-[height] duration-300 ease-out ${isActive ? 'bg-primary dark:bg-secondary' : 'bg-primary/20 dark:bg-secondary/30'}`}
                   style={{ height: `${Math.max(h, 8)}%` }}
                 />
               </div>

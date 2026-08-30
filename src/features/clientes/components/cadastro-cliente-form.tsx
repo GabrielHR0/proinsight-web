@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
+import { toast } from 'sonner'
 import { UserPlus, Loader2, Check, CalendarIcon, ChevronDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -110,6 +111,7 @@ export function CadastroClienteForm({ onSuccess, onCancel }: CadastroClienteForm
       setSuccess(true)
       setTimeout(() => onSuccess?.(), 2500)
     } catch {
+      toast.error('Erro ao cadastrar aluno. Tente novamente.')
       setLoading(false)
     }
   }

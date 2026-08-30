@@ -44,7 +44,7 @@ export function HomePage() {
 
       <div
         key={view}
-        className="bg-background -mt-16 z-10 flex flex-1 flex-col rounded-t-[56px] px-6 pt-8 pb-8 shadow-sm animate-in slide-in-from-bottom fade-in duration-500"
+        className="bg-background -mt-16 z-10 flex flex-1 flex-col rounded-t-[56px] px-6 pt-8 pb-8 shadow-sm animate-in slide-in-from-bottom fade-in duration-300"
       >
         {view === 'home' ? (
           <div className="flex flex-col gap-5">

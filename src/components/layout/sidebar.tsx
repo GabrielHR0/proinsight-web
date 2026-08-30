@@ -1,16 +1,23 @@
 import { NavLink, useLocation } from 'react-router-dom'
 import { useMenuDrawer } from '@/stores/menu-drawer'
 import { cn } from '@/lib/utils'
-import { Menu, Home, BarChart3, Clock, FolderTree, CircleUser } from 'lucide-react'
+import { Menu, Home, BarChart3, Clock, CircleUser, Users, CalendarDays, Settings } from 'lucide-react'
 
 const sections = [
   {
     label: 'Navegação',
     items: [
       { to: '/', icon: Home, label: 'Início' },
+      { to: '/clientes', icon: Users, label: 'Alunos' },
       { to: '/avaliacoes', icon: BarChart3, label: 'Protocolos' },
+      { to: '/agenda', icon: CalendarDays, label: 'Agenda' },
       { to: '/historico', icon: Clock, label: 'Histórico' },
-      { to: '/categorias', icon: FolderTree, label: 'Categorias' },
+    ],
+  },
+  {
+    label: 'Sistema',
+    items: [
+      { to: '/configuracoes', icon: Settings, label: 'Configurações' },
       { to: '/perfil', icon: CircleUser, label: 'Perfil' },
     ],
   },
@@ -26,7 +33,7 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="bg-background hidden h-dvh w-64 shrink-0 flex-col border-r border-border/70 md:flex">
+    <aside aria-label="Menu lateral" className="bg-background hidden h-dvh w-64 shrink-0 flex-col border-r border-border/70 md:flex">
       <div className="flex h-16 items-center gap-3 border-b border-border/70 px-5">
         <span className="text-foreground text-lg font-bold tracking-tight">Proinsight</span>
         <div className="ml-auto">
@@ -39,6 +46,7 @@ export function Sidebar() {
           <button
             type="button"
             onClick={toggle}
+            aria-label="Abrir menu de navegação"
             className={cn(
               'relative flex w-full items-center gap-3 rounded-2xl px-4 py-2.5 text-sm transition-colors duration-200',
               isActive('/')

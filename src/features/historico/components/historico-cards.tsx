@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils'
 import { corClassificacao, detalhesLegiveis, formatarDataHora, rotuloTipo } from './classificacao-utils'
 import { formatarValorLaudo, METRICAS, valorMetrica } from './laudo-utils'
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible'
+import { FcTempoChart, extrairFc } from '@/features/avaliacao/components/fc-tempo-chart'
 
 interface HistoricoCardsProps {
   avaliacoes: AvaliacaoHistorico[]
@@ -42,6 +43,9 @@ function HistoricoLinha({ avaliacao }: { avaliacao: AvaliacaoHistorico }) {
   }).filter((r): r is { rotulo: string; valor: string } => r != null)
 
   const detalhes = detalhesLegiveis(avaliacao)
+  const observacao = detalhes.find((d) => d.label === 'Observações')
+  const detalhesMetricas = detalhes.filter((d) => d.label !== 'Observações')
+  const fcDados = extrairFc(avaliacao.detalhes)
 
   return (
     <Collapsible open={aberta} onOpenChange={(v) => { setAberta(v); if (!v) setCompletaAberta(false) }}>
@@ -83,7 +87,7 @@ function HistoricoLinha({ avaliacao }: { avaliacao: AvaliacaoHistorico }) {
               </div>
             )}
 
-            {detalhes.length > 0 && (
+            {(detalhes.length > 0 || (avaliacao.tipo === 'VO2_MAX' && fcDados.length > 0)) && (
               <div className="border-t border-foreground/5 pt-4">
                 <button
                   type="button"
@@ -96,15 +100,52 @@ function HistoricoLinha({ avaliacao }: { avaliacao: AvaliacaoHistorico }) {
                   <ChevronDown size={14} className={cn('text-muted-foreground transition-transform duration-200', completaAberta && 'rotate-180')} />
                 </button>
                 {completaAberta && (
-                  <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2">
-                    {detalhes.map((d) => (
-                      <div key={d.label}>
-                        <p className="text-muted-foreground text-[10px] font-semibold uppercase leading-relaxed tracking-[0.12em]">
-                          {d.label}
-                        </p>
-                        <p className="text-foreground text-sm font-bold">{d.valor}</p>
+                  <div className="mt-3 flex flex-col gap-4">
+                    {detalhesMetricas.length > 0 && (
+                      <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                        {detalhesMetricas.map((d) => (
+                          <div key={d.label}>
+                            <p className="text-muted-foreground text-[10px] font-semibold uppercase leading-relaxed tracking-[0.12em]">
+                              {d.label}
+                            </p>
+                            <p className="text-foreground text-sm font-bold">{d.valor}</p>
+                          </div>
+                        ))}
                       </div>
-                    ))}
+                    )}
+
+                    {avaliacao.tipo === 'VO2_MAX' && fcDados.length > 0 && (
+                      <div className="rounded-3xl border border-border/60 bg-background p-4 shadow-sm">
+                        <div className="flex items-baseline justify-between">
+                          <p className="text-muted-foreground text-[11px] font-semibold uppercase tracking-[0.14em]">
+                            Freq. cardíaca × tempo
+                          </p>
+                          <span className="text-muted-foreground text-[11px] font-semibold uppercase tracking-wider">
+                            {fcDados.length} registros
+                          </span>
+                        </div>
+                        <div className="mt-3">
+                          <FcTempoChart dados={fcDados} />
+                        </div>
+                        {observacao && (
+                          <div className="mt-3 border-t border-foreground/5 pt-3">
+                            <p className="text-muted-foreground text-[10px] font-semibold uppercase leading-relaxed tracking-[0.12em]">
+                              Observações
+                            </p>
+                            <p className="text-foreground text-sm font-normal leading-relaxed">{observacao.valor}</p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {avaliacao.tipo !== 'VO2_MAX' && observacao && (
+                      <div className="border-t border-foreground/5 pt-3">
+                        <p className="text-muted-foreground text-[10px] font-semibold uppercase leading-relaxed tracking-[0.12em]">
+                          Observações
+                        </p>
+                        <p className="text-foreground text-sm font-normal leading-relaxed">{observacao.valor}</p>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

@@ -28,6 +28,7 @@ import { calcularIdade, tempoAcompanhamento } from '@/features/historico/compone
 import type { Metrica } from '@/features/historico/components/laudo-utils'
 import type { AvaliacaoHistorico } from '@/types/avaliacao'
 import type { Cliente } from '@/types/cliente'
+import { FcTempoChart, extrairFc } from '@/features/avaliacao/components/fc-tempo-chart'
 
 function FormField({ label, ...props }: { label: string } & React.InputHTMLAttributes<HTMLInputElement>) {
   return (
@@ -65,26 +66,33 @@ function ClienteHeader({ cliente, avaliacoes }: { cliente: Cliente; avaliacoes: 
         </div>
       </div>
 
-      <div className="mt-5 grid grid-cols-3 gap-4">
-        <div className="flex flex-col gap-0.5">
-          <p className="text-muted-foreground text-[11px] font-semibold uppercase leading-relaxed tracking-[0.12em]">
-            Última avaliação
-          </p>
-          <p className="text-foreground text-base font-black tracking-tight">
-            {formatarData(ultima?.data_avaliacao)}
-          </p>
+      <div className="mt-5 rounded-2xl border border-border/70 bg-card shadow-sm">
+        <div className="grid grid-cols-2 divide-x divide-border/70">
+          <div className="px-4 py-3">
+            <p className="text-muted-foreground text-[10px] font-semibold uppercase leading-relaxed tracking-[0.12em]">
+              Última avaliação
+            </p>
+            <p className="text-foreground text-2xl font-black tracking-tight">
+              {formatarData(ultima?.data_avaliacao)}
+            </p>
+            {ultima && (
+              <p className="text-muted-foreground mt-0.5 text-xs">
+                {ultima.tipo === 'VO2_MAX' ? 'VO₂max' : 'IMC'}
+              </p>
+            )}
+          </div>
+          <div className="px-4 py-3">
+            <p className="text-muted-foreground text-[10px] font-semibold uppercase leading-relaxed tracking-[0.12em]">
+              Avaliações
+            </p>
+            <p className="text-foreground text-3xl font-black tabular-nums">{avaliacoes.length}</p>
+          </div>
         </div>
-        <div className="flex flex-col gap-0.5">
-          <p className="text-muted-foreground text-[11px] font-semibold uppercase leading-relaxed tracking-[0.12em]">
-            Avaliações
-          </p>
-          <p className="text-foreground text-base font-black tracking-tight">{avaliacoes.length}</p>
-        </div>
-        <div className="flex flex-col gap-0.5">
-          <p className="text-muted-foreground text-[11px] font-semibold uppercase leading-relaxed tracking-[0.12em]">
+        <div className="border-t border-border/70 px-4 py-3">
+          <p className="text-muted-foreground text-[10px] font-semibold uppercase leading-relaxed tracking-[0.12em]">
             Acompanhamento
           </p>
-          <p className="text-foreground text-base font-black tracking-tight">
+          <p className="text-foreground text-lg font-black tracking-tight">
             {acompanhamento ?? '\u2014'}
           </p>
         </div>
@@ -420,6 +428,32 @@ export function ClienteDetailPage() {
                     />
                     <DetalheMetrica avaliacoes={avaliacoes} metrica={metricaAtiva} />
                     <ResumoEvolucao avaliacoes={avaliacoes} />
+
+                    {(() => {
+                      const ordenadas = [...avaliacoes].sort((a, b) =>
+                        (b.data_avaliacao ?? '').localeCompare(a.data_avaliacao ?? ''),
+                      )
+                      const ultimaVo2 = ordenadas.find(
+                        (a) => a.tipo === 'VO2_MAX' && extrairFc(a.detalhes).length > 0,
+                      )
+                      if (!ultimaVo2) return null
+                      const fcDados = extrairFc(ultimaVo2.detalhes)
+                      return (
+                        <div className="rounded-2xl border border-border/60 bg-background shadow-sm px-5 py-4">
+                          <div className="flex items-baseline justify-between">
+                            <p className="text-muted-foreground text-[11px] font-semibold uppercase tracking-[0.14em]">
+                              Freq. cardíaca × tempo
+                            </p>
+                            <span className="text-muted-foreground text-[11px] font-semibold uppercase tracking-wider">
+                              {formatarData(ultimaVo2.data_avaliacao)}
+                            </span>
+                          </div>
+                          <div className="mt-3 rounded-3xl border border-border/60 bg-background p-4 shadow-sm">
+                            <FcTempoChart dados={fcDados} />
+                          </div>
+                        </div>
+                      )
+                    })()}
                   </div>
                 )}
               </div>

@@ -136,7 +136,7 @@ export function WeeklyPerformance() {
             className={`flex-1 rounded-full py-1.5 text-xs font-semibold transition-colors ${
               periodo === p.value
                 ? 'bg-primary text-primary-foreground'
-                : 'bg-muted text-muted-foreground'
+                : 'bg-muted/60 text-foreground'
             }`}
           >
             {p.label}
@@ -152,8 +152,8 @@ export function WeeklyPerformance() {
             onClick={() => setActive(k.id)}
             className={`shrink-0 rounded-full px-4 py-1.5 text-xs font-semibold transition-colors ${
               active === k.id
-                ? 'bg-foreground text-background'
-                : 'bg-muted text-muted-foreground'
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-muted/60 text-foreground'
             }`}
           >
             {k.label}
@@ -172,7 +172,7 @@ export function WeeklyPerformance() {
             / {kpi.unidade === 'R$' ? `R$ ${kpi.meta}` : `${kpi.meta}${kpi.unidade}`}
           </span>
         </div>
-        <span className={`text-xs font-bold ${variacao >= 0 ? 'text-primary' : 'text-red-500'}`}>
+        <span className={`text-xs font-bold ${variacao >= 0 ? 'text-primary dark:text-primary-foreground' : 'text-red-500'}`}>
           {variacao >= 0 ? '+' : ''}{Math.round(variacao)}%
         </span>
       </div>
@@ -183,7 +183,7 @@ export function WeeklyPerformance() {
           const isActive = i === kpi.dados.length - 1
           return (
             <div key={`${periodo}-${kpi.id}-${i}`} className="flex flex-1 flex-col items-center gap-1">
-              <span className={`text-[10px] font-bold ${isActive ? 'text-primary' : 'text-muted-foreground'}`}>
+              <span className={`text-[10px] font-bold ${isActive ? 'text-primary dark:text-primary-foreground' : 'text-muted-foreground'}`}>
                 {kpi.unidade === '%' ? `${valor}` : valor}
               </span>
               <div className="w-full flex items-end" style={{ height: '80px' }}>
@@ -192,7 +192,7 @@ export function WeeklyPerformance() {
                   style={{ height: `${Math.max(h, 8)}%` }}
                 />
               </div>
-              <span className={`text-[10px] font-medium ${isActive ? 'text-primary dark:text-secondary' : 'text-muted-foreground'}`}>{labels[periodo][i]}</span>
+              <span className={`text-[10px] font-medium ${isActive ? 'text-primary dark:text-primary-foreground dark:text-secondary' : 'text-muted-foreground'}`}>{labels[periodo][i]}</span>
             </div>
           )
         })}

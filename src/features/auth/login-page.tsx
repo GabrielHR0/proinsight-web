@@ -45,7 +45,7 @@ export function LoginPage() {
       className="flex min-h-screen flex-col px-4"
       style={{
         backgroundColor: 'var(--muted)',
-        backgroundImage: 'radial-gradient(ellipse at 10% 30%, rgba(0,208,158,0.5) 0%, transparent 50%), radial-gradient(ellipse at 90% 70%, rgba(0,208,158,0.35) 0%, transparent 45%), radial-gradient(ellipse at 50% 10%, rgba(0,208,158,0.2) 0%, transparent 40%)',
+        backgroundImage: 'radial-gradient(ellipse at 10% 30%, rgba(90,161,127,0.5) 0%, transparent 50%), radial-gradient(ellipse at 90% 70%, rgba(90,161,127,0.35) 0%, transparent 45%), radial-gradient(ellipse at 50% 10%, rgba(90,161,127,0.2) 0%, transparent 40%)',
         backgroundSize: '200% 200%',
         animation: 'bg-drift 20s ease-in-out infinite',
       }}
@@ -138,6 +138,11 @@ export function LoginPage() {
             Não tem conta?{' '}
             <Link to="/register" className="text-primary font-medium transition-colors hover:underline">
               Criar conta
+            </Link>
+          </p>
+          <p className="text-muted-foreground mt-2 text-center text-sm">
+            <Link to="/esqueci-senha" className="text-primary font-medium transition-colors hover:underline">
+              Esqueceu a senha?
             </Link>
           </p>
         </div>

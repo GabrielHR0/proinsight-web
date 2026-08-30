@@ -26,4 +26,12 @@ export const authService = {
   getMe() {
     return api.get<User>('/auth/me')
   },
+
+  forgotPassword(email: string) {
+    return api.post<void>('/auth/forgot-password', { email })
+  },
+
+  resetPassword(token: string, newPassword: string) {
+    return api.post<void>('/auth/reset-password', { token, newPassword })
+  },
 }

@@ -8,11 +8,14 @@ import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { NumberTicker } from '@/components/ui/number-ticker'
 import { Progress } from '@/components/ui/progress'
 import { Textarea } from '@/components/ui/textarea'
 import { avaliacaoService, type DadosPreAvaliacao, type AvaliacaoVo2MaxResponse } from '@/services/avaliacao-service'
 import { useAuth } from '@/stores/auth'
 import { cn } from '@/lib/utils'
+import { FcTempoChart } from './fc-tempo-chart'
+import { ReferenciaFaixas } from '@/features/historico/components/referencia-faixas'
 
 const STEPS = [
   { label: 'Dados' },
@@ -160,6 +163,7 @@ export function Vo2MaxWizard({ clienteId, clienteNome, protocoloId, onDone, onNe
 
   const handleFinishTest = useCallback(() => {
     clearTimer()
+    setTestPhase('config')
     setStep(2)
   }, [clearTimer])
 
@@ -541,11 +545,13 @@ export function Vo2MaxWizard({ clienteId, clienteNome, protocoloId, onDone, onNe
                       />
                     </svg>
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <span className="text-foreground text-5xl font-black tracking-tight tabular-nums leading-none">
-                        {typeof serverResult.classificacao.valor_vo2max === 'number'
-                          ? serverResult.classificacao.valor_vo2max.toFixed(1)
-                          : serverResult.classificacao.valor_vo2max}
-                      </span>
+                      <NumberTicker
+                        value={typeof serverResult.classificacao.valor_vo2max === 'number'
+                          ? serverResult.classificacao.valor_vo2max
+                          : 0}
+                        decimals={1}
+                        className="text-foreground text-5xl font-black tracking-tight tabular-nums leading-none"
+                      />
                       <span className="text-muted-foreground mt-1.5 text-[10px] font-semibold uppercase tracking-[0.14em]">
                         VO₂max
                       </span>
@@ -556,6 +562,18 @@ export function Vo2MaxWizard({ clienteId, clienteNome, protocoloId, onDone, onNe
                     {serverResult.classificacao.nome_legivel || serverResult.classificacao.nome}
                   </Badge>
                 </div>
+
+                {serverResult.referencias && (
+                  <div className="animate-in fade-in fill-mode-both rounded-2xl border border-border/70 bg-card p-5 shadow-sm [animation-delay:350ms] [animation-duration:400ms]">
+                    <ReferenciaFaixas
+                      referencia={serverResult.referencias}
+                      valor={serverResult.classificacao.valor_vo2max}
+                      tipo="VO2_MAX"
+                      mostrarValorAtual={false}
+                      painel={false}
+                    />
+                  </div>
+                )}
 
                 <div className="animate-in fade-in fill-mode-both border-y border-border/60 [animation-delay:350ms] [animation-duration:400ms]">
                   <div className="grid grid-cols-4 divide-x divide-border/60">
@@ -593,21 +611,15 @@ export function Vo2MaxWizard({ clienteId, clienteNome, protocoloId, onDone, onNe
                 </div>
 
                 {hrReadings.length > 0 && (
-                  <div className="animate-in fade-in fill-mode-both flex flex-col gap-2.5 [animation-delay:550ms] [animation-duration:400ms]">
-                    <h3 className="text-sm font-semibold">FC Registradas</h3>
-                    <div className="flex items-center gap-0">
-                      {hrReadings.map((r, i) => (
-                        <div key={i} className="flex flex-1 items-center">
-                          <div className="flex flex-col items-center">
-                            <div className="bg-primary size-2 rounded-full" />
-                            <span className="text-muted-foreground mt-1.5 text-[10px] tabular-nums">{r.bpm}</span>
-                            <span className="text-muted-foreground text-[9px] tabular-nums">{formatTime(r.time)}</span>
-                          </div>
-                          {i < hrReadings.length - 1 && (
-                            <div className="bg-border/60 mx-0.5 h-px flex-1" />
-                          )}
-                        </div>
-                      ))}
+                  <div className="animate-in fade-in fill-mode-both flex flex-col gap-3 [animation-delay:550ms] [animation-duration:400ms]">
+                    <div className="flex items-baseline justify-between">
+                      <h3 className="text-sm font-semibold">Freq. cardíaca × tempo</h3>
+                      <span className="text-muted-foreground text-[11px] font-semibold uppercase tracking-wider">
+                        {hrReadings.length} registros
+                      </span>
+                    </div>
+                    <div className="rounded-3xl border border-border/60 bg-background p-4 shadow-sm">
+                      <FcTempoChart dados={hrReadings.map((r) => ({ tempo: r.time, bpm: r.bpm }))} />
                     </div>
                   </div>
                 )}
@@ -631,7 +643,7 @@ export function Vo2MaxWizard({ clienteId, clienteNome, protocoloId, onDone, onNe
       {/* ═══════════ BOTTOM NAV ═══════════ */}
       <div className="border-border bg-background/80 fixed inset-x-0 z-[55] border-t px-6 py-4 pb-8 backdrop-blur-lg bottom-[72px] md:bottom-0 md:pb-6">
         <div className="flex gap-3">
-          {!isFirst && !submitting && (testPhase !== 'running' || step === 2) && !(step === 2 && serverResult) && (
+          {!isFirst && !submitting && !(step === 2 && serverResult) && (
             <Button variant="outline" className="flex-1 rounded-full" onClick={handleBack}>
               <ChevronLeft size={16} className="mr-1" />
               Voltar

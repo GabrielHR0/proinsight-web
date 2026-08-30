@@ -51,7 +51,7 @@ export function BirthdayCard() {
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-foreground text-sm font-medium truncate">{a.nome}</span>
-                  <span className={`text-xs font-bold shrink-0 ml-2 ${a.dias === 0 ? 'text-primary' : 'text-muted-foreground'}`}>{label(a.dias)}</span>
+                  <span className={`text-xs font-bold shrink-0 ml-2 ${a.dias === 0 ? 'text-primary dark:text-primary-foreground' : 'text-muted-foreground'}`}>{label(a.dias)}</span>
                 </div>
                 <div className="bg-muted-foreground/10 h-1.5 w-full overflow-hidden rounded-full">
                   <div className={`h-full rounded-full ${barColor(a.dias)} transition-all`} style={{ width: `${pct}%` }} />

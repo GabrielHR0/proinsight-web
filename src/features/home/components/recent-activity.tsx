@@ -35,7 +35,7 @@ export function RecentActivity() {
     <section>
       <div className="mb-4 flex items-center justify-between">
         <h3 className="text-foreground text-sm font-semibold">Atividade recente</h3>
-        <button onClick={() => navigate('/historico')} className="text-link text-xs font-semibold">
+        <button onClick={() => navigate('/historico')} className="text-link dark:text-primary-foreground text-xs font-semibold">
           Ver todas
         </button>
       </div>

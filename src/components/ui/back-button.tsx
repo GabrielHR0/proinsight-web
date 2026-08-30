@@ -13,8 +13,9 @@ export function BackButton({ onClick, className }: BackButtonProps) {
       variant="outline"
       size="icon"
       onClick={onClick}
+      aria-label="Voltar"
       className={cn(
-        'rounded-full border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/20',
+        'rounded-full border-primary/30 text-primary hover:bg-primary/10',
         className,
       )}
     >

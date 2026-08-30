@@ -29,7 +29,7 @@ export function DailyProgress() {
             strokeWidth="4"
             strokeDasharray={circumference}
             strokeDashoffset={animated ? offset : circumference}
-            className="text-link"
+            className="text-link dark:text-primary-foreground"
             strokeLinecap="round"
             style={{ transition: 'stroke-dashoffset 800ms cubic-bezier(0.22, 1, 0.36, 1)' }}
           />
@@ -38,7 +38,7 @@ export function DailyProgress() {
       </div>
       <div className="flex flex-1 flex-col gap-0.5">
         <span className="text-foreground text-sm font-medium">Avaliações hoje</span>
-        <span className="text-link text-xs font-semibold">{pending} pendentes</span>
+        <span className="text-link dark:text-primary-foreground text-xs font-semibold">{pending} pendentes</span>
       </div>
     </div>
   )

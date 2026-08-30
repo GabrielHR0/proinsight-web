@@ -10,11 +10,9 @@ import {
   CalendarDays,
   BarChart3,
   Clock,
-  FolderTree,
   CircleUser,
   Settings,
   Building2,
-  Sparkles,
   X,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -35,7 +33,6 @@ const allGroups: MenuGroup[] = [
     title: 'Principal',
     items: [
       { icon: Home, label: 'Home', to: '/' },
-      { icon: Sparkles, label: 'Sugestões', to: '/' },
     ],
   },
   {
@@ -63,7 +60,6 @@ const allGroups: MenuGroup[] = [
     items: [
       { icon: BarChart3, label: 'Análise', to: '/analise' },
       { icon: Clock, label: 'Histórico', to: '/historico' },
-      { icon: FolderTree, label: 'Categorias', to: '/categorias' },
     ],
   },
   {
@@ -110,6 +106,8 @@ export function MenuDrawer() {
         onClick={close}
       />
       <div
+        role="dialog"
+        aria-label="Menu de navegação"
         className={`bg-background fixed top-0 left-0 z-[70] flex h-full w-[85%] max-w-sm flex-col overflow-y-auto rounded-r-[32px] pt-14 pb-8 shadow-2xl transition-transform duration-300 ease-out ${open ? 'translate-x-0' : '-translate-x-full'}`}
       >
         <div className="mb-2 flex items-center justify-between px-6">
@@ -119,6 +117,7 @@ export function MenuDrawer() {
           <button
             type="button"
             onClick={close}
+            aria-label="Fechar menu"
             className="text-muted-foreground hover:text-foreground hover:bg-muted -mr-2 flex size-8 items-center justify-center rounded-full transition-colors"
           >
             <X size={18} />

@@ -23,6 +23,13 @@ function resolverPerfil(user: User | null): string {
   return 'Avaliador'
 }
 
+const INFO_ROWS = [
+  { label: 'Nome de usuário', getValue: (u: User | null) => u?.userName ?? '—' },
+  { label: 'E-mail', getValue: (u: User | null) => u?.email ?? '—' },
+  { label: 'Academias vinculadas', getValue: (u: User | null) => String(u?.academiaIds?.length ?? 0) },
+  { label: 'Acesso', getValue: (u: User | null) => resolverPerfil(u) },
+] as const
+
 export function ProfilePage() {
   const navigate = useNavigate()
   const { user, logout } = useAuth()
@@ -45,56 +52,36 @@ export function ProfilePage() {
         </div>
       }
     >
-      <div className="flex flex-col gap-6">
-        {/* Card do usuário */}
-        <div className="flex flex-col items-center gap-3 rounded-2xl border border-border/70 bg-card p-6 text-center shadow-sm">
-          <div className="relative flex size-20 items-center justify-center rounded-full bg-muted text-3xl font-black tracking-tight text-foreground">
-            {user?.userName?.charAt(0)?.toUpperCase() ?? '?'}
-            <span className="bg-primary absolute right-1 bottom-1 size-4 rounded-full border-2 border-card" />
-          </div>
-          <div>
-            <h2 className="text-foreground text-xl font-bold tracking-tight">{user?.userName ?? 'Usuário'}</h2>
-            <p className="text-muted-foreground text-sm">{user?.email ?? ''}</p>
-          </div>
-          <span className="text-muted-foreground text-xs font-semibold uppercase tracking-[0.14em]">
-            {resolverPerfil(user)}
-          </span>
-        </div>
-
-        {/* Informações da conta */}
-        <div className="flex flex-col gap-3">
-          <div className="flex items-center justify-between gap-4 rounded-2xl border border-border/70 bg-card px-4 py-3 shadow-sm">
-            <span className="text-muted-foreground text-[11px] font-semibold tracking-[0.14em] uppercase">
-              Nome de usuário
-            </span>
-            <span className="text-foreground text-sm font-semibold truncate">{user?.userName ?? '—'}</span>
+      <div className="flex flex-col gap-5">
+        <div className="rounded-2xl border border-border/70 bg-card shadow-sm">
+          <div className="flex items-center gap-4 px-5 py-5">
+            <div className="relative flex size-14 shrink-0 items-center justify-center rounded-full bg-muted text-xl font-black tracking-tight text-foreground">
+              {user?.userName?.charAt(0)?.toUpperCase() ?? '?'}
+              <span className="bg-primary absolute right-0.5 bottom-0.5 size-3.5 rounded-full border-2 border-card" />
+            </div>
+            <div className="min-w-0">
+              <h2 className="text-foreground truncate text-base font-bold tracking-tight">{user?.userName ?? 'Usuário'}</h2>
+              <p className="text-muted-foreground truncate text-xs">{user?.email ?? ''}</p>
+              <span className="text-muted-foreground mt-0.5 inline-block text-[10px] font-semibold uppercase tracking-[0.14em]">
+                {resolverPerfil(user)}
+              </span>
+            </div>
           </div>
 
-          <div className="flex items-center justify-between gap-4 rounded-2xl border border-border/70 bg-card px-4 py-3 shadow-sm">
-            <span className="text-muted-foreground text-[11px] font-semibold tracking-[0.14em] uppercase">
-              E-mail
-            </span>
-            <span className="text-foreground text-sm font-semibold truncate">{user?.email ?? '—'}</span>
-          </div>
-
-          <div className="flex items-center justify-between gap-4 rounded-2xl border border-border/70 bg-card px-4 py-3 shadow-sm">
-            <span className="text-muted-foreground text-[11px] font-semibold tracking-[0.14em] uppercase">
-              Academias vinculadas
-            </span>
-            <span className="text-foreground text-sm font-semibold truncate">
-              {user?.academiaIds?.length ?? 0}
-            </span>
-          </div>
-
-          <div className="flex items-center justify-between gap-4 rounded-2xl border border-border/70 bg-card px-4 py-3 shadow-sm">
-            <span className="text-muted-foreground text-[11px] font-semibold tracking-[0.14em] uppercase">
-              Acesso
-            </span>
-            <span className="text-foreground text-sm font-semibold truncate">{resolverPerfil(user)}</span>
+          <div className="border-t border-border/70 divide-y divide-border/70">
+            {INFO_ROWS.map((row) => (
+              <div key={row.label} className="flex items-center justify-between px-5 py-3">
+                <span className="text-muted-foreground text-[11px] font-semibold uppercase tracking-[0.14em]">
+                  {row.label}
+                </span>
+                <span className="text-foreground text-sm font-semibold truncate max-w-[60%] text-right">
+                  {row.getValue(user)}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* Sair */}
         <Button
           variant="outline"
           onClick={handleLogout}

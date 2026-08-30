@@ -22,8 +22,7 @@ function getInitialTheme(): string {
   if (typeof window === 'undefined') return themes[0].name
   const stored = localStorage.getItem('theme')
   if (stored && themes.some((t) => t.name === stored)) return stored
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-  return prefersDark ? 'dark' : 'light'
+  return 'light'
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {

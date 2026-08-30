@@ -1,4 +1,5 @@
 import { api } from '@/lib/api'
+import type { ReferenciaClassificacao } from '@/types/avaliacao'
 
 export interface DadosPreAvaliacao {
   protocolo_id: string
@@ -36,6 +37,7 @@ export interface AvaliacaoVo2MaxResponse {
   cliente_id: string
   avaliador_id: string
   classificacao: ClassificacaoVo2Max
+  referencias?: ReferenciaClassificacao
   data_avaliacao: string
 }
 

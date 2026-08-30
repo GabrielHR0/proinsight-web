@@ -23,7 +23,7 @@ export function ReassessmentList() {
         <h3 className="text-foreground text-sm font-semibold">Precisam de reavaliação</h3>
         <button
           onClick={() => navigate('/clientes')}
-          className="text-link text-xs font-semibold"
+          className="text-link dark:text-primary-foreground text-xs font-semibold"
         >
           Ver todos
         </button>

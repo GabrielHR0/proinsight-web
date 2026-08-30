@@ -44,24 +44,24 @@ const CORES_BARRA: Record<string, string> = {
 }
 
 const CORES_ZONA: Record<string, string> = {
-  MUITO_RUIM: 'rgba(239,68,68,0.08)',
-  RUIM: 'rgba(245,158,11,0.08)',
-  MEDIO: 'rgba(234,179,8,0.06)',
-  M\u00C9DIO: 'rgba(234,179,8,0.06)',
-  BOM: 'rgba(0,208,158,0.06)',
-  MUITO_BOM: 'rgba(16,185,129,0.06)',
-  EXCELENTE: 'rgba(14,165,233,0.06)',
-  ABAIXO_DO_PESO: 'rgba(14,165,233,0.06)',
-  NORMAL: 'rgba(0,208,158,0.06)',
-  SOBREPESO: 'rgba(251,191,36,0.08)',
-  OBESIDADE_I: 'rgba(249,115,22,0.08)',
-  OBESIDADE_II: 'rgba(239,68,68,0.08)',
-  OBESIDADE_III: 'rgba(185,28,28,0.08)',
+  MUITO_RUIM: 'rgba(239,68,68,0.15)',
+  RUIM: 'rgba(245,158,11,0.15)',
+  MEDIO: 'rgba(234,179,8,0.12)',
+  M\u00C9DIO: 'rgba(234,179,8,0.12)',
+  BOM: 'rgba(90,161,127,0.12)',
+  MUITO_BOM: 'rgba(16,185,129,0.12)',
+  EXCELENTE: 'rgba(14,165,233,0.12)',
+  ABAIXO_DO_PESO: 'rgba(14,165,233,0.12)',
+  NORMAL: 'rgba(90,161,127,0.12)',
+  SOBREPESO: 'rgba(251,191,36,0.15)',
+  OBESIDADE_I: 'rgba(249,115,22,0.15)',
+  OBESIDADE_II: 'rgba(239,68,68,0.15)',
+  OBESIDADE_III: 'rgba(185,28,28,0.15)',
 }
 
 function corZona(classificacao?: string): string {
-  if (!classificacao) return 'rgba(128,128,128,0.04)'
-  return CORES_ZONA[classificacao] ?? 'rgba(128,128,128,0.04)'
+  if (!classificacao) return 'rgba(128,128,128,0.08)'
+  return CORES_ZONA[classificacao] ?? 'rgba(128,128,128,0.08)'
 }
 
 function inicioZona(nivel: NivelReferencia): number {

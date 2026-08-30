@@ -44,7 +44,7 @@ export function ActivityList() {
                 {item.label}
               </span>
               <div className="flex items-center gap-2">
-                <span className="text-link text-base font-medium">
+                <span className="text-link dark:text-primary-foreground text-base font-medium">
                   {item.value}
                 </span>
                 <div className="h-0 w-[9px] rotate-90 border-t border-primary" />
@@ -53,7 +53,7 @@ export function ActivityList() {
                 </span>
               </div>
             </div>
-            <span className="text-link mt-0.5 text-xs font-semibold capitalize">
+            <span className="text-link dark:text-primary-foreground mt-0.5 text-xs font-semibold capitalize">
               {item.time}
             </span>
           </div>

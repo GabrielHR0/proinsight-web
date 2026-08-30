@@ -25,12 +25,12 @@ export function PeriodTabs({ children }: PeriodTabsProps) {
   return (
     <div>
       <Tabs defaultValue="diario" className="w-full">
-        <TabsList className="flex !h-auto w-full items-center justify-center gap-6 rounded-[22px] bg-foreground/5 p-[6px_14px]">
+        <TabsList className="flex !h-auto w-full items-center justify-center gap-6 rounded-[22px] bg-muted p-[6px_14px]">
           {visiblePeriods.map((p) => (
             <TabsTrigger
               key={p.value}
               value={p.value}
-              className="flex h-[31px] flex-1 items-center justify-center rounded-[10px] border-0 bg-transparent px-0 py-0 text-[15px] font-normal text-foreground/60 capitalize shadow-none transition-all data-[state=active]:h-12 data-[state=active]:rounded-[19px] data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              className="flex h-[31px] flex-1 items-center justify-center rounded-[10px] border-0 bg-transparent px-0 py-0 text-[15px] font-normal text-foreground/60 capitalize shadow-none transition-all data-[state=active]:h-12 data-[state=active]:rounded-[19px] data-[state=active]:bg-primary data-[state=active]:text-primary-foreground dark:data-[state=active]:bg-primary dark:data-[state=active]:text-primary-foreground dark:data-[state=active]:shadow-none"
             >
               {p.label}
             </TabsTrigger>

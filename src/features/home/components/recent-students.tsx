@@ -16,7 +16,7 @@ export function RecentStudents() {
         <h2 className="text-foreground text-lg font-bold">Alunos</h2>
         <button
           onClick={() => navigate('/clientes')}
-          className="text-link text-sm font-semibold"
+          className="text-link dark:text-primary-foreground text-sm font-semibold"
         >
           Ver todos
         </button>

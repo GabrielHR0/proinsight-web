@@ -50,7 +50,7 @@ export function NextAssessmentCard() {
             <button
               type="button"
               onClick={proximo}
-              className="text-link text-xs font-semibold hover:underline"
+              className="text-link dark:text-primary-foreground text-xs font-semibold hover:underline"
             >
               {fila[index + 1].nome} &rarr;
             </button>
@@ -94,7 +94,7 @@ export function NextAssessmentCard() {
             <button
               type="button"
               onClick={proximo}
-              className="text-link text-xs font-semibold hover:underline"
+              className="text-link dark:text-primary-foreground text-xs font-semibold hover:underline"
             >
               {fila[index + 1].nome} &rarr;
             </button>

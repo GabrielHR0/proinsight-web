@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button'
 import { ConfirmModal } from '@/components/confirm-modal'
 import { useTheme } from '@/stores/theme'
 
+const APP_VERSION = import.meta.env.VITE_APP_VERSION ?? '0.1.0'
+
 export function SettingsContent() {
   const [showClearModal, setShowClearModal] = useState(false)
   const { theme, setTheme, themes } = useTheme()
@@ -94,7 +96,7 @@ export function SettingsContent() {
               <Info size={18} className="text-muted-foreground shrink-0" />
               <div>
                 <p className="text-foreground text-sm font-medium">ProInsight</p>
-                <p className="text-muted-foreground text-xs">Versão 1.0.0</p>
+                <p className="text-muted-foreground text-xs">Versão {APP_VERSION}</p>
               </div>
             </div>
           </Card>

@@ -1,6 +1,6 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Loader2, Activity } from 'lucide-react'
+import { Loader2, Activity, Search } from 'lucide-react'
 import { CATEGORY_ICON } from '@/components/category-icons'
 import { PageLayout } from '@/components/layout/page-layout'
 import { BackButton } from '@/components/ui/back-button'
@@ -34,6 +34,8 @@ function SectionIcon({ categoria, className }: { categoria: string; className?: 
 
 export function HubPage() {
   const navigate = useNavigate()
+
+  const [busca, setBusca] = useState('')
 
   const { data: hub, isLoading } = useProtocoloHub()
   const favoritarMutation = useFavoritar()
@@ -89,25 +91,45 @@ export function HubPage() {
   const favoritos = hub?.favoritos ?? []
   const porCategoria = hub?.porCategoria ?? {}
 
-  const favoritoItems = useMemo(() => buildItems(favoritos), [buildItems, favoritos])
+  const matchesBusca = (p: ProtocoloResumo) => {
+    if (!busca) return true
+    const q = busca.toLowerCase()
+    return (
+      p.nome.toLowerCase().includes(q) ||
+      p.descricao?.toLowerCase().includes(q) ||
+      (CATEGORY_LABEL[p.categoria] ?? p.categoria).toLowerCase().includes(q)
+    )
+  }
+
+  const favoritosFiltered = useMemo(() => favoritos.filter(matchesBusca), [favoritos, busca])
+  const porCategoriaFiltered = useMemo(() => {
+    const result: Record<string, ProtocoloResumo[]> = {}
+    for (const [key, items] of Object.entries(porCategoria)) {
+      const filtered = items.filter(matchesBusca)
+      if (filtered.length > 0) result[key] = filtered
+    }
+    return result
+  }, [porCategoria, busca])
+
+  const favoritoItems = useMemo(() => buildItems(favoritosFiltered), [buildItems, favoritosFiltered])
 
   const sections = useMemo(() => {
-    const known = KNOWN_CATEGORIES.filter((k) => (porCategoria[k]?.length ?? 0) > 0).map((k) => ({
+    const known = KNOWN_CATEGORIES.filter((k) => (porCategoriaFiltered[k]?.length ?? 0) > 0).map((k) => ({
       key: k,
       label: CATEGORY_LABEL[k] ?? k,
-      items: buildItems(porCategoria[k]),
+      items: buildItems(porCategoriaFiltered[k]),
     }))
-    const unknown = Object.keys(porCategoria)
-      .filter((k) => !KNOWN_CATEGORIES.includes(k) && (porCategoria[k]?.length ?? 0) > 0)
+    const unknown = Object.keys(porCategoriaFiltered)
+      .filter((k) => !KNOWN_CATEGORIES.includes(k) && (porCategoriaFiltered[k]?.length ?? 0) > 0)
     if (unknown.length > 0) {
       known.push({
         key: 'sem_categoria',
         label: 'Sem categoria',
-        items: unknown.flatMap((k) => buildItems(porCategoria[k])),
+        items: unknown.flatMap((k) => buildItems(porCategoriaFiltered[k])),
       })
     }
     return known
-  }, [porCategoria, buildItems])
+  }, [porCategoriaFiltered, buildItems])
 
   if (isLoading) {
     return (
@@ -133,8 +155,8 @@ export function HubPage() {
         <div className="flex items-center gap-3">
           <BackButton onClick={() => navigate('/')} />
           <div>
-            <h1 className="text-foreground text-2xl font-bold">Protocolos</h1>
-            <p className="text-muted-foreground text-sm">Selecione um protocolo para realizar</p>
+            <h1 className="text-primary-foreground text-2xl font-bold">Protocolos</h1>
+            <p className="text-primary-foreground/80 mt-0.5 text-sm">Consulte, favorite e encontre protocolos</p>
           </div>
         </div>
       }
@@ -143,8 +165,20 @@ export function HubPage() {
         <EmptyState title="Nenhum protocolo disponível" />
       ) : (
         <div className="flex flex-col gap-8">
+          {/* Busca global */}
+          <div className="relative">
+            <Search className="text-muted-foreground pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2" />
+            <input
+              type="text"
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+              placeholder="Buscar protocolos..."
+              className="bg-muted text-foreground placeholder:text-muted-foreground w-full rounded-xl py-2.5 pl-10 pr-4 text-sm outline-none transition-colors focus:ring-2 focus:ring-primary/30"
+            />
+          </div>
+
           {/* Favoritos */}
-          {favoritoItems.length > 0 && (
+          {favoritoItems.length > 0 ? (
             <section>
               <div className="mb-4 flex items-center gap-2">
                 <StarIcon filled className="size-5 text-link" />
@@ -159,7 +193,13 @@ export function HubPage() {
                 renderActions={renderStarAction}
               />
             </section>
-          )}
+          ) : favoritos.length === 0 && !busca ? (
+            <section className="rounded-2xl border border-dashed border-border/60 bg-muted/30 px-6 py-8 text-center">
+              <StarIcon className="text-muted-foreground mx-auto mb-3 size-8 opacity-40" />
+              <p className="text-foreground text-sm font-medium">Nenhum favorito ainda</p>
+              <p className="text-muted-foreground mt-1 text-xs">Toque na estrela de um protocolo para encontrá-lo rápido aqui</p>
+            </section>
+          ) : null}
 
           {/* Categorias */}
           {sections.map((section) => (
@@ -178,6 +218,13 @@ export function HubPage() {
               />
             </section>
           ))}
+
+          {/* Sem resultados na busca */}
+          {busca && favoritoItems.length === 0 && sections.length === 0 && (
+            <p className="text-muted-foreground py-8 text-center text-sm">
+              Nenhum protocolo encontrado para "{busca}"
+            </p>
+          )}
         </div>
       )}
     </PageLayout>

@@ -130,6 +130,58 @@ html, body {
   --sidebar-ring: #137a63;
 }
 
+/* ─────────────── Dark Blue theme ─────────────── */
+
+[data-theme="dark-blue"] {
+  --color-bg-root: #f8fafc;
+  --color-content-root: #f8fafc;
+  --color-surface-root: #ffffff;
+  --color-border-root: rgba(9, 0, 136, 0.12);
+  --color-primary-root: #02006c;
+  --color-primary-foreground-root: #ffffff;
+  --color-secondary-root: #090088;
+  --color-secondary-foreground-root: #ffffff;
+  --color-accent-root: #010057;
+  --color-accent-foreground-root: #ffffff;
+  --color-muted-root: #eeeefc;
+  --color-muted-foreground-root: #5555aa;
+  --color-link-root: #010048;
+
+  /* shadcn/ui CSS variables */
+  --background: #f8fafc;
+  --foreground: #03002e;
+  --card: #ffffff;
+  --card-foreground: #03002e;
+  --popover: #ffffff;
+  --popover-foreground: #03002e;
+  --primary: #02006c;
+  --primary-foreground: #ffffff;
+  --secondary: #090088;
+  --secondary-foreground: #ffffff;
+  --muted: #eeeefc;
+  --muted-foreground: #5555aa;
+  --accent: #010057;
+  --accent-foreground: #ffffff;
+  --destructive: #ef4444;
+  --border: rgba(9, 0, 136, 0.12);
+  --input: rgba(9, 0, 136, 0.15);
+  --ring: #02006c;
+  --chart-1: #090088;
+  --chart-2: #02006c;
+  --chart-3: #010057;
+  --chart-4: #5050cc;
+  --chart-5: #03002e;
+  --radius: 0.625rem;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #03002e;
+  --sidebar-primary: #02006c;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #090088;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgba(9, 0, 136, 0.12);
+  --sidebar-ring: #02006c;
+}
+
 /* ─────────────── Adding a new theme ───────────────
  *
  * 1. Add to src/types/theme.ts:

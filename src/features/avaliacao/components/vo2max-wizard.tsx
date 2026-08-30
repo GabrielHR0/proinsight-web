@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { Check, ChevronLeft, ChevronRight, Heart, Loader2, Timer } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
+import { toast } from 'sonner'
 import { Stepper } from '@/components/ui/stepper'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -189,7 +190,7 @@ export function Vo2MaxWizard({ clienteId, clienteNome, protocoloId, onDone, onNe
       })
       setServerResult(response)
     } catch {
-      // handled by api.ts toast
+      toast.error('Erro ao enviar avaliação. Tente novamente.')
     } finally {
       setSubmitting(false)
     }
@@ -232,6 +233,7 @@ export function Vo2MaxWizard({ clienteId, clienteNome, protocoloId, onDone, onNe
               altura_cm: Math.round(alturaVal),
             })
           } catch {
+            toast.error('Erro ao salvar peso/altura.')
             imcSentRef.current = false
             return
           }
@@ -250,6 +252,7 @@ export function Vo2MaxWizard({ clienteId, clienteNome, protocoloId, onDone, onNe
                 altura_cm: Math.round(alturaVal),
               })
             } catch {
+              toast.error('Erro ao salvar peso/altura.')
               imcSentRef.current = false
               return
             }

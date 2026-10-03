@@ -20,10 +20,11 @@ import { useClienteAvaliacoes } from '@/hooks/use-cliente-avaliacoes'
 import type { Sexo } from '@/types/cliente'
 import { cn } from '@/lib/utils'
 import { EvolucaoChart } from '@/features/historico/components/evolucao-chart'
+import { GraficosFuncionais } from '@/features/historico/components/funcional-graficos'
 import { DetalheMetrica } from '@/features/historico/components/detalhe-metrica'
 import { ResumoEvolucao } from '@/features/historico/components/comparacao-avaliacoes'
 import { HistoricoCards } from '@/features/historico/components/historico-cards'
-import { formatarData, rotuloSexo } from '@/features/historico/components/classificacao-utils'
+import { formatarData, rotuloSexo, rotuloTipo } from '@/features/historico/components/classificacao-utils'
 import { calcularIdade, tempoAcompanhamento } from '@/features/historico/components/laudo-utils'
 import type { Metrica } from '@/features/historico/components/laudo-utils'
 import type { AvaliacaoHistorico } from '@/types/avaliacao'
@@ -77,7 +78,7 @@ function ClienteHeader({ cliente, avaliacoes }: { cliente: Cliente; avaliacoes: 
             </p>
             {ultima && (
               <p className="text-muted-foreground mt-0.5 text-xs">
-                {ultima.tipo === 'VO2_MAX' ? 'VO₂max' : 'IMC'}
+                {ultima.tipo === 'VO2_MAX' ? 'VO₂max' : rotuloTipo(ultima.tipo)}
               </p>
             )}
           </div>
@@ -181,7 +182,7 @@ export function ClienteDetailPage() {
 
   if (isLoading) {
     return (
-      <PageLayout header={<div className="flex items-center gap-3"><BackButton onClick={() => navigate('/clientes')} /><h1 className="text-primary-foreground text-xl font-bold">Detalhes do aluno</h1></div>}>
+      <PageLayout header={<div className="flex items-center gap-3"><BackButton fallbackTo="/clientes" /><h1 className="text-primary-foreground text-xl font-bold">Detalhes do aluno</h1></div>}>
         <div className="flex items-center justify-center py-12"><Loader2 size={20} className="text-muted-foreground animate-spin" /></div>
       </PageLayout>
     )
@@ -189,7 +190,7 @@ export function ClienteDetailPage() {
 
   if (!cliente) {
     return (
-      <PageLayout header={<div className="flex items-center gap-3"><BackButton onClick={() => navigate('/clientes')} /><h1 className="text-primary-foreground text-xl font-bold">Detalhes do aluno</h1></div>}>
+      <PageLayout header={<div className="flex items-center gap-3"><BackButton fallbackTo="/clientes" /><h1 className="text-primary-foreground text-xl font-bold">Detalhes do aluno</h1></div>}>
         <p className="text-muted-foreground py-12 text-center text-sm">Aluno não encontrado</p>
       </PageLayout>
     )
@@ -199,7 +200,7 @@ export function ClienteDetailPage() {
     <PageLayout
       header={
         <div className="flex items-center gap-3">
-          <BackButton onClick={() => navigate('/clientes')} />
+          <BackButton fallbackTo="/clientes" />
           <h1 className="text-primary-foreground flex-1 text-xl font-bold">Detalhes do aluno</h1>
           <Button
             onClick={() => navigate('/avaliacao/nova', { state: { clienteId: cliente.id } })}
@@ -426,6 +427,7 @@ export function ClienteDetailPage() {
                       metricasComparacao={metricasComparacao}
                       onMetricasComparacaoChange={setMetricasComparacao}
                     />
+                    <GraficosFuncionais avaliacoes={avaliacoes} />
                     <DetalheMetrica avaliacoes={avaliacoes} metrica={metricaAtiva} />
                     <ResumoEvolucao avaliacoes={avaliacoes} />
 

@@ -1,10 +1,15 @@
 import { describe, expect, it } from 'vitest'
 import type { AvaliacaoHistorico, NivelReferencia } from '@/types/avaliacao'
 import {
+  corClassificacao,
   detalhesLegiveis,
   formatarDataHora,
   formatarFaixa,
+  formatarValor,
+  linhasFuncional,
+  rotuloClassificacao,
   rotuloReferencia,
+  rotuloTipo,
 } from '../components/classificacao-utils'
 
 describe('formatarFaixa', () => {
@@ -77,5 +82,128 @@ describe('detalhesLegiveis', () => {
     }
     const itens = detalhesLegiveis(avaliacao)
     expect(itens.find((i) => i.label === 'Observações')?.valor).toBe('Aluno evoluiu bem no teste')
+  })
+})
+
+describe('corClassificacao percentil', () => {
+  it('mapeia PERCENTIL_ para faixas de cor', () => {
+    expect(corClassificacao('PERCENTIL_3').texto).toBe('text-red-500 dark:text-red-400')
+    expect(corClassificacao('PERCENTIL_15').texto).toBe('text-amber-600 dark:text-amber-400')
+    expect(corClassificacao('PERCENTIL_40').texto).toBe('text-yellow-600 dark:text-yellow-400')
+    expect(corClassificacao('PERCENTIL_55').texto).toBe('text-primary')
+    expect(corClassificacao('PERCENTIL_80').texto).toBe('text-emerald-600 dark:text-emerald-400')
+    expect(corClassificacao('PERCENTIL_95').texto).toBe('text-sky-500 dark:text-sky-400')
+  })
+
+  it('trata MENOR_QUE_P5 como muito ruim', () => {
+    expect(corClassificacao('MENOR_QUE_P5').texto).toBe('text-red-500 dark:text-red-400')
+  })
+
+  it('mantém cores legadas e padrão desconhecido', () => {
+    expect(corClassificacao('NORMAL').texto).toBe('text-primary')
+    expect(corClassificacao('QUALQUER_COISA').texto).toBe('text-muted-foreground')
+    expect(corClassificacao().texto).toBe('text-muted-foreground')
+  })
+
+  it('mapeia as faixas novas BAIXO e ELEVADO', () => {
+    expect(corClassificacao('BAIXO').texto).toBe('text-amber-600 dark:text-amber-400')
+    expect(corClassificacao('ELEVADO').texto).toBe('text-emerald-600 dark:text-emerald-400')
+  })
+
+  it('interpreta legenda legada "Percentil N"', () => {
+    expect(corClassificacao('Percentil 40').texto).toBe('text-yellow-600 dark:text-yellow-400')
+    expect(corClassificacao('Percentil 80').texto).toBe('text-emerald-600 dark:text-emerald-400')
+    expect(corClassificacao('Percentil 90').texto).toBe('text-sky-500 dark:text-sky-400')
+  })
+})
+
+describe('rotuloClassificacao', () => {
+  it('humaniza faixas e códigos legados', () => {
+    expect(rotuloClassificacao('BAIXO')).toBe('Baixo')
+    expect(rotuloClassificacao('NORMAL')).toBe('Normal')
+    expect(rotuloClassificacao('ELEVADO')).toBe('Elevado')
+    expect(rotuloClassificacao('PERCENTIL_45')).toBe('Percentil 45')
+    expect(rotuloClassificacao('Percentil 45')).toBe('Percentil 45')
+    expect(rotuloClassificacao('BOM')).toBe('Bom')
+  })
+
+  it('retorna dash sem código', () => {
+    expect(rotuloClassificacao(undefined)).toBe('—')
+    expect(rotuloClassificacao('')).toBe('—')
+  })
+})
+
+describe('rotuloTipo e formatarValor funcional', () => {
+  it('rotula FUNCIONAL como Funcional', () => {
+    expect(rotuloTipo('FUNCIONAL')).toBe('Funcional')
+  })
+
+  it('arredonda valor funcional para inteiro', () => {
+    expect(formatarValor(50.6, 'FUNCIONAL')).toBe('51')
+    expect(formatarValor(45, 'FUNCIONAL')).toBe('45')
+  })
+})
+
+describe('linhasFuncional', () => {
+  const avaliacao: AvaliacaoHistorico = {
+    id: 'f1',
+    cliente_id: 'c1',
+    protocolo_id: 'protocolo_avaliacao_funcional_idoso',
+    tipo: 'FUNCIONAL',
+    valor: 49.5,
+    detalhes: {
+      percentis: {
+        SENTAR_LEVANTAR_30S: 55,
+        FLEXAO_COTOVELO_30S: 45,
+        MARCHA_ESTACIONARIA_2MIN: 60,
+        SENTAR_ALCANCAR_PES: 40,
+        ALCANCAR_COSTAS: 50,
+        LEVANTAR_CAMINHAR_2M5: null,
+      },
+      classificacoes: {
+        SENTAR_LEVANTAR_30S: 'ELEVADO',
+        FLEXAO_COTOVELO_30S: 'NORMAL',
+        MARCHA_ESTACIONARIA_2MIN: 'ELEVADO',
+        SENTAR_ALCANCAR_PES: 'NORMAL',
+        ALCANCAR_COSTAS: 'NORMAL',
+        LEVANTAR_CAMINHAR_2M5: 'BAIXO',
+      },
+      sentarLevantar30s: 14,
+      marchaEstacionaria2Min: 96,
+      sentarAlcancarPes: 32.5,
+      observacoes: 'Aluno participou de toda a bateria',
+    },
+  }
+
+  it('monta as 6 linhas na ordem da bateria', () => {
+    expect(linhasFuncional(avaliacao)).toHaveLength(6)
+    expect(linhasFuncional(avaliacao)[0].nome).toBe('Sentar e levantar (30s)')
+  })
+
+  it('formata valor bruto, percentil e faixa por teste', () => {
+    const linhas = linhasFuncional(avaliacao)
+    const sentar = linhas.find((l) => l.nome === 'Sentar e levantar (30s)')
+    expect(sentar?.valor).toBe('14 repetições')
+    expect(sentar?.percentil).toBe('P55')
+    expect(sentar?.classificacao).toBe('Elevado')
+    expect(linhas.find((l) => l.nome === 'Marcha estacionária (2 min)')?.valor).toBe('96 passos')
+    expect(linhas.find((l) => l.nome === 'Sentar e alcançar os pés')?.valor).toBe('32,5 cm')
+  })
+
+  it('usa P<5 quando o percentil vem nulo (abaixo do P5)', () => {
+    const linha = linhasFuncional(avaliacao).find((l) => l.nome === 'Levantar e caminhar (2,5 m)')
+    expect(linha?.percentil).toBe('P<5')
+    expect(linha?.classificacao).toBe('Baixo')
+    expect(linha?.valor).toBeNull()
+  })
+
+  it('omite linha sem valor, sem percentil e sem classificação', () => {
+    const semDados: AvaliacaoHistorico = { ...avaliacao, detalhes: {} }
+    expect(linhasFuncional(semDados)).toHaveLength(0)
+  })
+
+  it('mantém observações do avaliador em detalhesLegiveis', () => {
+    const itens = detalhesLegiveis(avaliacao)
+    expect(itens.find((i) => i.label === 'Observações')?.valor).toBe('Aluno participou de toda a bateria')
   })
 })

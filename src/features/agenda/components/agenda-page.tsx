@@ -1,5 +1,4 @@
 import { useState, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
 import {
   CalendarPlus, ChevronLeft, ChevronRight,
   Plus,
@@ -32,7 +31,6 @@ function diaSemanaExtenso(dia: number, mes: number, ano: number) {
 }
 
 export function AgendaPage() {
-  const navigate = useNavigate()
   const hoje = useMemo(() => new Date(), [])
   const [ano, setAno] = useState(hoje.getFullYear())
   const [mes, setMes] = useState(hoje.getMonth())
@@ -56,7 +54,7 @@ export function AgendaPage() {
     <PageLayout
       header={
         <div className="flex items-center gap-3">
-          <BackButton onClick={() => navigate('/')} />
+          <BackButton />
           <div className="flex-1">
             <h1 className="text-primary-foreground text-xl font-bold">Agenda</h1>
             <p className="text-primary-foreground/80 mt-0.5 text-sm">Gerencie seus agendamentos</p>

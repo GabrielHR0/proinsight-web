@@ -19,9 +19,10 @@ const CATEGORY_LABEL: Record<string, string> = {
   BIOIMPEDANCIA: 'Bioimpedância',
   FORCA: 'Força',
   FLEXIBILIDADE: 'Flexibilidade',
+  FUNCIONAL: 'Funcional',
 }
 
-const KNOWN_CATEGORIES = ['VO2_MAX', 'IMC', 'BIOIMPEDANCIA', 'FORCA', 'FLEXIBILIDADE']
+const KNOWN_CATEGORIES = ['VO2_MAX', 'IMC', 'BIOIMPEDANCIA', 'FORCA', 'FLEXIBILIDADE', 'FUNCIONAL']
 
 function getProtocolIcon(categoria: string) {
   return CATEGORY_ICON[categoria] ?? Activity
@@ -153,7 +154,7 @@ export function HubPage() {
     <PageLayout
       header={
         <div className="flex items-center gap-3">
-          <BackButton onClick={() => navigate('/')} />
+          <BackButton />
           <div>
             <h1 className="text-primary-foreground text-2xl font-bold">Protocolos</h1>
             <p className="text-primary-foreground/80 mt-0.5 text-sm">Consulte, favorite e encontre protocolos</p>

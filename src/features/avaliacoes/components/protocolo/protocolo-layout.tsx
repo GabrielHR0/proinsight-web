@@ -1,5 +1,4 @@
 import type { ReactNode } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { BackButton } from '@/components/ui/back-button'
 import { CategoryVisual } from '@/components/category-visual'
 import type { ProtocoloDetalhe } from '@/types/protocolo'
@@ -11,13 +10,11 @@ interface Props {
 }
 
 export function ProtocoloLayout({ protocolo, children }: Props) {
-  const navigate = useNavigate()
-
   return (
     <PageLayout
       header={
         <div className="flex items-center gap-3">
-          <BackButton onClick={() => navigate('/avaliacoes')} />
+          <BackButton fallbackTo="/avaliacoes" />
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               <h1 className="text-primary-foreground truncate text-xl font-bold">{protocolo.nome}</h1>

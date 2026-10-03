@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { LogOut } from 'lucide-react'
 import { PageLayout } from '@/components/layout/page-layout'
 import { BackButton } from '@/components/ui/back-button'
@@ -31,7 +30,6 @@ const INFO_ROWS = [
 ] as const
 
 export function ProfilePage() {
-  const navigate = useNavigate()
   const { user, logout } = useAuth()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
 
@@ -44,7 +42,7 @@ export function ProfilePage() {
     <PageLayout
       header={
         <div className="flex items-center gap-3">
-          <BackButton onClick={() => navigate('/')} />
+          <BackButton />
           <div className="flex-1">
             <h1 className="text-primary-foreground text-xl font-bold">Perfil</h1>
             <p className="text-primary-foreground/80 mt-0.5 text-sm">Suas informações profissionais</p>

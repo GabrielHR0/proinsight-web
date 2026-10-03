@@ -14,6 +14,7 @@ const CATEGORY_LABEL: Record<string, string> = {
   BIOIMPEDANCIA: 'Bioimpedância',
   FORCA: 'Força',
   FLEXIBILIDADE: 'Flexibilidade',
+  FUNCIONAL: 'Funcional',
 }
 
 export function CategoriesPage() {
@@ -44,7 +45,7 @@ export function CategoriesPage() {
     <PageLayout
       header={
         <div className="flex items-center gap-3">
-          <BackButton onClick={() => navigate('/')} />
+          <BackButton />
           <div>
             <h1 className="text-primary-foreground text-2xl font-bold">Categorias</h1>
             <p className="text-primary-foreground/80 mt-0.5 text-sm">Explore protocolos por categoria</p>

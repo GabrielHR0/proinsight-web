@@ -10,7 +10,7 @@ export function NotFoundPage() {
     <PageLayout
       header={
         <div className="flex items-center gap-3">
-          <BackButton onClick={() => navigate('/')} />
+          <BackButton />
           <div className="flex-1">
             <h1 className="text-primary-foreground text-xl font-bold">Página não encontrada</h1>
             <p className="text-primary-foreground/80 mt-0.5 text-sm">O endereço não existe</p>

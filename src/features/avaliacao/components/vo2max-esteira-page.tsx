@@ -23,7 +23,7 @@ export function Vo2MaxEsteiraPage() {
     <PageLayout
       header={
         <div className="flex items-center gap-3">
-          <BackButton onClick={() => navigate('/avaliacao/nova')} />
+          <BackButton fallbackTo="/avaliacao/nova" />
           <div>
             <h1 className="text-primary-foreground text-xl font-bold">Esteira Incremental</h1>
             <p className="text-primary-foreground/80 mt-0.5 text-sm">VO₂max</p>
@@ -37,7 +37,7 @@ export function Vo2MaxEsteiraPage() {
         protocoloId={state.protocoloId}
         onExit={() => navigate('/avaliacao/nova')}
         onNewEvaluation={() => navigate('/avaliacao/nova')}
-        onDone={() => navigate('/avaliacoes')}
+        onDone={() => navigate(`/clientes/${state.clienteId}`)}
       />
     </PageLayout>
   )

@@ -239,7 +239,7 @@ export function AvaliacaoIncrementalPage() {
       <PageLayout
         header={
           <div className="flex items-center gap-3">
-            <BackButton onClick={() => navigate('/avaliacao/nova')} />
+            <BackButton fallbackTo="/avaliacao/nova" />
             <div>
               <h1 className="text-primary-foreground text-xl font-bold">Teste Incremental</h1>
               <p className="text-primary-foreground/80 mt-0.5 text-sm">VO₂max — Esteira</p>
@@ -514,7 +514,7 @@ export function AvaliacaoIncrementalPage() {
       <PageLayout
         header={
           <div className="flex items-center gap-3">
-            <BackButton onClick={() => navigate('/avaliacao/nova')} />
+            <BackButton fallbackTo="/avaliacao/nova" />
             <div>
               <h1 className="text-primary-foreground text-xl font-bold">Resultado</h1>
               <p className="text-primary-foreground/80 mt-0.5 text-sm">Teste Incremental</p>
@@ -622,7 +622,7 @@ export function AvaliacaoIncrementalPage() {
       <PageLayout
         header={
           <div className="flex items-center gap-3">
-            <BackButton onClick={() => navigate('/avaliacoes')} />
+            <BackButton fallbackTo="/avaliacoes" />
             <div>
               <h1 className="text-primary-foreground text-xl font-bold">Avaliação Concluída</h1>
             </div>
@@ -681,7 +681,7 @@ export function AvaliacaoIncrementalPage() {
               </div>
             </>
           )}
-          <Button className="rounded-full" onClick={() => navigate('/avaliacoes')}>
+          <Button className="rounded-full" onClick={() => navigate(client ? `/clientes/${client.id}` : '/avaliacoes')}>
             Ver Avaliações
           </Button>
         </div>

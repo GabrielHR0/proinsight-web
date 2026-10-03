@@ -46,6 +46,13 @@ const registry: Record<string, CategoryConfig> = {
     border: 'border-teal-200 dark:border-teal-800',
     dot: 'bg-teal-500',
   },
+  FUNCIONAL: {
+    icon: <CATEGORY_ICON.FUNCIONAL size={14} />,
+    label: 'Funcional',
+    text: 'text-sky-700 dark:text-sky-400',
+    border: 'border-sky-200 dark:border-sky-800',
+    dot: 'bg-sky-500',
+  },
 }
 
 const defaults: CategoryConfig = {

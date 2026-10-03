@@ -4,6 +4,12 @@ import { authService } from '@/services/auth-service'
 import { tokenStorage } from '@/lib/token'
 import { dispatchSessionExpired, dispatchTokenRefreshed } from '@/lib/auth-events'
 
+declare module 'axios' {
+  export interface AxiosRequestConfig {
+    silentErrors?: boolean
+  }
+}
+
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
   timeout: 15_000,
@@ -81,6 +87,11 @@ api.interceptors.response.use(
       tokenStorage.clear()
       localStorage.removeItem('proinsight_academia_id')
       dispatchSessionExpired()
+      return Promise.reject(error)
+    }
+
+    // silentErrors → o chamador trata o erro propriamente (sem toasts)
+    if ((error.config as { silentErrors?: boolean } | undefined)?.silentErrors) {
       return Promise.reject(error)
     }
 

@@ -11,6 +11,7 @@ import { useAuth } from '@/stores/auth'
 import { clienteService } from '@/services/cliente-service'
 import { protocoloService } from '@/services/protocolo-service'
 import { Vo2MaxWizard } from './vo2max-wizard'
+import { FuncionalIdosoWizard } from './funcional-idoso-wizard'
 import type { Cliente } from '@/types/cliente'
 import type { ProtocoloResumo, HubResponse } from '@/types/protocolo'
 
@@ -20,6 +21,7 @@ const CATEGORY_LABEL: Record<string, string> = {
   BIOIMPEDANCIA: 'Composição corporal',
   FORCA: 'Força',
   FLEXIBILIDADE: 'Flexibilidade',
+  FUNCIONAL: 'Funcional',
 }
 
 const CATEGORY_SEGMENTS = [
@@ -29,9 +31,11 @@ const CATEGORY_SEGMENTS = [
   { key: 'IMC', label: 'Corpóreos' },
   { key: 'FORCA', label: 'Força' },
   { key: 'FLEXIBILIDADE', label: 'Flex.' },
+  { key: 'FUNCIONAL', label: 'Func.' },
 ]
 
 const PROTOCOLO_RECOMENDADO_ID = 'protocolo_vo2max_esteira_incremental'
+const PROTOCOLO_FUNCIONAL_ID = 'protocolo_avaliacao_funcional_idoso'
 
 const ICON_BG = ['bg-secondary', 'bg-accent', 'bg-link'] as const
 
@@ -147,7 +151,7 @@ export function NovaAvaliacaoPage() {
 
   const handleProtocoloConfirm = (protocolo = selectedProtocolo) => {
     if (!selectedCliente || !protocolo) return
-    if (protocolo.id === 'protocolo_vo2max_esteira_incremental') {
+    if (protocolo.id === PROTOCOLO_RECOMENDADO_ID || protocolo.id === PROTOCOLO_FUNCIONAL_ID) {
       setAvaliacaoIniciada(true)
       return
     }
@@ -236,20 +240,33 @@ export function NovaAvaliacaoPage() {
           <div className="flex flex-1 flex-col">
             <Stepper steps={STEPS} currentStep={2} className="px-6 mb-5" />
 
-            <Vo2MaxWizard
-              clienteId={selectedCliente.id}
-              clienteNome={selectedCliente.fullName}
-              protocoloId={selectedProtocolo?.id ?? ''}
-              onExit={() => {
-                setAvaliacaoIniciada(false)
-                setSelectedProtocoloId(null)
-              }}
-              onNewEvaluation={() => {
-                setAvaliacaoIniciada(false)
-                setSelectedProtocoloId(null)
-              }}
-              onDone={() => navigate('/avaliacoes')}
-            />
+            {selectedProtocolo?.id === PROTOCOLO_FUNCIONAL_ID ? (
+              <FuncionalIdosoWizard
+                clienteId={selectedCliente.id}
+                clienteNome={selectedCliente.fullName}
+                protocoloId={selectedProtocolo.id}
+                onNewEvaluation={() => {
+                  setAvaliacaoIniciada(false)
+                  setSelectedProtocoloId(null)
+                }}
+                onDone={() => navigate(`/clientes/${selectedCliente.id}`)}
+              />
+            ) : (
+              <Vo2MaxWizard
+                clienteId={selectedCliente.id}
+                clienteNome={selectedCliente.fullName}
+                protocoloId={selectedProtocolo?.id ?? ''}
+                onExit={() => {
+                  setAvaliacaoIniciada(false)
+                  setSelectedProtocoloId(null)
+                }}
+                onNewEvaluation={() => {
+                  setAvaliacaoIniciada(false)
+                  setSelectedProtocoloId(null)
+                }}
+                onDone={() => navigate(`/clientes/${selectedCliente.id}`)}
+              />
+            )}
           </div>
         ) : (
           <div className="flex flex-1 flex-col">
@@ -306,7 +323,7 @@ export function NovaAvaliacaoPage() {
       {selectedCliente && selectedProtocolo && !avaliacaoIniciada && (
         <StickyBottomAction
           protocolo={selectedProtocolo}
-          onStart={handleProtocoloConfirm}
+          onStart={() => handleProtocoloConfirm()}
         />
       )}
     </div>

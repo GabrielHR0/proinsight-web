@@ -56,6 +56,42 @@ export interface AvaliacaoImcResponse {
   extras?: Record<string, unknown>
 }
 
+export interface TesteFuncionalResultado {
+  teste: string
+  valor: number
+}
+
+export interface AvaliacaoFuncionalRequest {
+  cliente_id: string
+  protocolo_id: string
+  avaliador_id: string
+  observacoes?: string
+  testes: TesteFuncionalResultado[]
+}
+
+export interface ResultadoFuncional {
+  teste: string
+  teste_nome: string
+  unidade?: string
+  valor: number
+  percentil?: number
+  classificacao: string
+  classificacao_legivel?: string
+}
+
+export interface AvaliacaoFuncionalResponse {
+  protocolo_nome: string
+  protocolo_id: string
+  avaliador_id: string
+  cliente_id: string
+  avaliacao_id: string
+  status: string
+  idade: number
+  sexo: string
+  resultados: ResultadoFuncional[]
+  extras?: Record<string, unknown>
+}
+
 export const avaliacaoService = {
   async buscarDadosPreAvaliacao(protocoloId: string, clienteId: string): Promise<DadosPreAvaliacao> {
     const { data } = await api.get<DadosPreAvaliacao>(`/avaliacoes/${protocoloId}/dados-pre-avaliacao/${clienteId}`)
@@ -69,6 +105,13 @@ export const avaliacaoService = {
 
   async submitImc(dados: AvaliacaoImcRequest): Promise<AvaliacaoImcResponse> {
     const { data } = await api.post<AvaliacaoImcResponse>('/avaliacoes/imc', dados)
+    return data
+  },
+
+  async submitFuncional(dados: AvaliacaoFuncionalRequest): Promise<AvaliacaoFuncionalResponse> {
+    const { data } = await api.post<AvaliacaoFuncionalResponse>('/avaliacoes/funcional', dados, {
+      silentErrors: true,
+    })
     return data
   },
 }

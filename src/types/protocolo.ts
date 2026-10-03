@@ -13,12 +13,23 @@ export interface ProtocolosListResponse {
   outros: ProtocoloResumo[]
 }
 
+export type TesteFuncionalTimer = 'REGRESSIVA' | 'CONTAGEM' | 'NENHUM'
+
+export interface TesteFuncionalDto {
+  teste: string
+  nome: string
+  unidade: string | null
+  timer: TesteFuncionalTimer
+  segundos: number | null
+}
+
 export interface ProtocoloDetalhe {
   id: string
   nome: string
   categoria: string
   padrao: boolean
   strategyKey: string
+  testes?: TesteFuncionalDto[]
   tabelaClassificacaoId: string
   descricao: string | null
   comoRealizar: string | null

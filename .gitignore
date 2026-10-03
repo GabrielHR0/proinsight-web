@@ -25,6 +25,10 @@ dist-ssr
 
 # AI tools
 .mimocode/
+.playwright-mcp/
+
+# local screenshot artifacts
+test-screenshots/
 
 # shadcn init artifacts
 @/

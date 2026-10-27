@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { toast } from 'sonner'
 import { api } from '@/lib/api'
 import { tokenStorage } from '@/lib/token'
 import { AUTH_EVENTS } from '@/lib/auth-events'
@@ -87,5 +88,38 @@ describe('api interceptors', () => {
     expect(localStorage.getItem('proinsight_academia_id')).toBeNull()
     expect(spy).toHaveBeenCalledTimes(1)
     window.removeEventListener(AUTH_EVENTS.sessionExpired, spy)
+  })
+
+  it('does not toast access denied on 403 when no tenant is selected', async () => {
+    tokenStorage.set('jwt', 'refresh')
+    const toastSpy = vi.spyOn(toast, 'error').mockImplementation(() => 0)
+
+    const config = { url: '/clientes', headers: {} } as never
+    const error = { isAxiosError: true, config, response: { status: 403, data: {} } } as never
+
+    const handlers = api.interceptors.response.handlers
+    const interceptor = handlers?.[0]
+
+    await expect(interceptor?.rejected?.(error)).rejects.toBeDefined()
+
+    expect(toastSpy).not.toHaveBeenCalled()
+    toastSpy.mockRestore()
+  })
+
+  it('toasts access denied on 403 when a tenant is selected', async () => {
+    tokenStorage.set('jwt', 'refresh')
+    localStorage.setItem('proinsight_academia_id', 'acad-123')
+    const toastSpy = vi.spyOn(toast, 'error').mockImplementation(() => 0)
+
+    const config = { url: '/clientes', headers: {} } as never
+    const error = { isAxiosError: true, config, response: { status: 403, data: {} } } as never
+
+    const handlers = api.interceptors.response.handlers
+    const interceptor = handlers?.[0]
+
+    await expect(interceptor?.rejected?.(error)).rejects.toBeDefined()
+
+    expect(toastSpy).toHaveBeenCalledWith('Acesso negado')
+    toastSpy.mockRestore()
   })
 })

@@ -107,7 +107,12 @@ api.interceptors.response.use(
 
     // 403 — Acesso negado
     if (status === 403) {
-      toast.error('Acesso negado')
+      // Sem tenant selecionado nao ha negacao de permissao para avisar:
+      // a sessao simplesmente nao tem academia (ou ela foi removida).
+      // Mostrar toast aqui spammaria "Acesso negado" em toda abertura do app.
+      if (localStorage.getItem('proinsight_academia_id')) {
+        toast.error('Acesso negado')
+      }
       return Promise.reject(error)
     }
 
